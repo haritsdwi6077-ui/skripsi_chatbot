@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tanya Hama &amp; Penyakit Padi</title>
+<style>
+  :root {
+    --latar: #f6f4ee;
+    --tinta: #23301f;
+    --sekam: #e7e1d3;
+    --daun: #3f6b3a;
+    --daun-tua: #2c4d29;
+    --peringatan: #8a3324;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--latar);
+    color: var(--tinta);
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  .wadah { max-width: 44rem; margin: 0 auto; padding: 2rem 1.25rem 7rem; }
+  header { border-bottom: 2px solid var(--daun); padding-bottom: 1rem; }
+  h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
+  header p { margin: 0; font-size: .95rem; color: #55604f; }
+  .percakapan { margin-top: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  .pesan { padding: .9rem 1.1rem; border-radius: .6rem; }
+  .pesan.pengguna { background: var(--daun); color: #fbfaf6; align-self: flex-end; max-width: 85%; }
+  .pesan.sistem { background: #fff; border: 1px solid var(--sekam); }
+  .pesan.galat { background: #fdf0ed; border: 1px solid var(--peringatan); color: var(--peringatan); }
+  .sumber { margin-top: .75rem; padding-top: .6rem; border-top: 1px dashed var(--sekam);
+            font-size: .85rem; color: #5b6455; }
+  .sumber ul { margin: .3rem 0 0; padding-left: 1.1rem; }
+  form {
+    position: fixed; inset: auto 0 0 0; background: var(--latar);
+    border-top: 1px solid var(--sekam); padding: .9rem 1.25rem;
+  }
+  .baris { max-width: 44rem; margin: 0 auto; display: flex; gap: .6rem; }
+  input {
+    flex: 1; padding: .7rem .9rem; font: inherit; font-size: 16px;
+    border: 1px solid #c9c2b2; border-radius: .5rem; background: #fff; color: inherit;
+  }
+  input:focus-visible, button:focus-visible { outline: 3px solid var(--daun); outline-offset: 2px; }
+  button {
+    padding: .7rem 1.2rem; font: inherit; border: 0; border-radius: .5rem;
+    background: var(--daun-tua); color: #fbfaf6; cursor: pointer;
+  }
+  button:disabled { opacity: .55; cursor: progress; }
+  .kosong { color: #6a7264; }
+</style>
+</head>
+<body>
+<div class="wadah">
+  <header>
+    <h1>Tanya Hama &amp; Penyakit Padi</h1>
+    <p>Jawaban disusun dari dokumen rujukan yang tersimpan pada basis pengetahuan.</p>
+  </header>
+
+  <div class="percakapan" id="percakapan">
+    <div class="pesan sistem kosong">
+      Tanyakan gejala, penyebab, atau cara pengendalian. Contoh: apa gejala awal penyakit blas pada daun padi?
+    </div>
+  </div>
+</div>
+
+<form id="form">
+  <div class="baris">
+    <input id="pertanyaan" autocomplete="off" placeholder="Tulis pertanyaan Anda" aria-label="Pertanyaan">
+    <button id="kirim" type="submit">Tanya</button>
+  </div>
+</form>
+
+<script>
+  const percakapan = document.getElementById('percakapan');
+  const form = document.getElementById('form');
+  const input = document.getElementById('pertanyaan');
+  const tombol = document.getElementById('kirim');
+
+  function tambah(kelas, isi) {
+    const el = document.createElement('div');
+    el.className = 'pesan ' + kelas;
+    el.innerHTML = isi;
+    percakapan.appendChild(el);
+    el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    return el;
+  }
+
+  function escapeHtml(teks) {
+    return teks.replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[c]);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pertanyaan = input.value.trim();
+    if (!pertanyaan) return;
+
+    document.querySelector('.kosong')?.remove();
+    tambah('pengguna', escapeHtml(pertanyaan));
+    input.value = '';
+    tombol.disabled = true;
+    const menunggu = tambah('sistem kosong', 'Mencari dokumen dan menyusun jawaban…');
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: pertanyaan })
+      });
+      const data = await res.json();
+      menunggu.remove();
+
+      if (!res.ok) {
+        tambah('galat', escapeHtml(data.error || 'Permintaan gagal diproses.'));
+        return;
+      }
+
+      let isi = escapeHtml(data.answer).replace(/\n/g, '<br>');
+      if (data.sources?.length) {
+        isi += '<div class="sumber">Sumber rujukan<ul>' +
+          data.sources.map((s) => '<li>' + escapeHtml(s) + '</li>').join('') +
+          '</ul></div>';
+      }
+      tambah('sistem', isi);
+    } catch (err) {
+      menunggu.remove();
+      tambah('galat', 'Tidak dapat menghubungi server. Periksa koneksi lalu coba lagi.');
+    } finally {
+      tombol.disabled = false;
+      input.focus();
+    }
+  });
+</script>
+</body>
+</html>
