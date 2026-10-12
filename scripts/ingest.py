@@ -20,6 +20,8 @@ embedding: setiap chunk harus dikirim ke API Gemini. Karena itu skrip ini:
 """
 
 import argparse
+import logging
+logging.getLogger("pypdf").setLevel(logging.ERROR)
 import hashlib
 import json
 import re
