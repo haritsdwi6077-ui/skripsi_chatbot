@@ -1,4 +1,5 @@
-"""Evaluasi RAGAS: context precision, context recall, faithfulness, answer relevancy.
+"""Evaluasi RAGAS: context precision, context recall, faithfulness, answer relevancy,
+ditambah pencatatan waktu respons (retrieval, generation, total) dan jumlah token.
 
 Dijalankan SECARA LOKAL:
     python scripts/evaluate.py --testset data_source/testset.json --out hasil_evaluasi.csv
@@ -20,6 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from dotenv import load_dotenv  # noqa: E402
+import pandas as pd  # noqa: E402
 
 load_dotenv()
 
@@ -53,7 +55,12 @@ def main() -> None:
 
     testset = json.loads(Path(args.testset).read_text(encoding="utf-8"))
 
-    samples = []
+    model_uji = args.model or config.LLM_MODEL
+    if JUDGE_MODEL == model_uji and JUDGE_BASE_URL == config.LLM_BASE_URL:
+        print("PERINGATAN: LLM penilai sama dengan LLM yang diuji (menilai jawabannya sendiri).\n"
+              "            Isi JUDGE_MODEL / JUDGE_BASE_URL / JUDGE_API_KEY di .env dengan model lain.\n")
+
+    samples, waktu = [], []
     for i, item in enumerate(testset, start=1):
         hasil = engine.answer(item["question"], top_k=args.top_k, model=args.model)
         samples.append(
@@ -64,7 +71,27 @@ def main() -> None:
                 "reference": item["ground_truth"],
             }
         )
-        print(f"  {i}/{len(testset)} pertanyaan dijawab")
+        w, u = hasil.get("timing", {}), hasil.get("usage", {})
+        waktu.append({
+            "retrieval_s": w.get("retrieval_s"), "generation_s": w.get("generation_s"),
+            "total_s": w.get("total_s"), "prompt_tokens": u.get("prompt_tokens"),
+            "completion_tokens": u.get("completion_tokens"),
+            "reasoning_tokens": u.get("reasoning_tokens"),
+        })
+        print(f"  {i}/{len(testset)} pertanyaan dijawab ({w.get('total_s', 0):.2f} s)")
+
+    # Simpan waktu lebih dulu, agar tetap ada walaupun tahap RAGAS gagal
+    df_waktu = pd.DataFrame(waktu)
+    df_waktu.insert(0, "user_input", [s["user_input"] for s in samples])
+    df_waktu.insert(1, "model", model_uji)
+    path_waktu = Path(args.out).with_name(Path(args.out).stem + "_waktu.csv")
+    df_waktu.to_csv(path_waktu, index=False)
+    ringkas = df_waktu[["retrieval_s", "generation_s", "total_s"]].astype(float)
+    print(f"\nWaktu respons ({model_uji}, n={len(df_waktu)}), detik:")
+    print(pd.DataFrame({
+        "rata-rata": ringkas.mean(), "median": ringkas.median(),
+        "p95": ringkas.quantile(0.95), "min": ringkas.min(), "maks": ringkas.max(),
+    }).round(3).to_string())
 
     judge = LangchainLLMWrapper(
         ChatOpenAI(model=JUDGE_MODEL, base_url=JUDGE_BASE_URL,
@@ -88,10 +115,13 @@ def main() -> None:
     )
 
     df = hasil.to_pandas()
+    metrik = list(df.select_dtypes("number").columns)
+    df = pd.concat([df.reset_index(drop=True), df_waktu.drop(columns=["user_input"])], axis=1)
     df.to_csv(args.out, index=False)
-    print("\nRata-rata skor:")
-    print(df.select_dtypes("number").mean().round(4).to_string())
-    print(f"\nRincian per pertanyaan disimpan di {args.out}")
+    print("\nRata-rata skor RAGAS:")
+    print(df[metrik].mean().round(4).to_string())
+    print(f"\nRincian per pertanyaan (skor + waktu) disimpan di {args.out}")
+    print(f"Waktu per pertanyaan juga ada di {path_waktu}")
 
 
 if __name__ == "__main__":

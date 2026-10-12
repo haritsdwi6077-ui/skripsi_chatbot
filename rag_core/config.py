@@ -10,14 +10,19 @@ def _env(name: str, default: str | None = None) -> str:
     return value
 
 
-# --- LLM (generation): DeepSeek, endpoint kompatibel OpenAI ---
+# --- LLM (generation): Groq, endpoint kompatibel OpenAI ---
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
-LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "https://api.deepseek.com")
-# Cek nama model terbaru di https://api-docs.deepseek.com sebelum deploy.
-LLM_MODEL = os.environ.get("LLM_MODEL", "deepseek-chat")
+LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "https://api.groq.com/openai/v1")
+# Cek nama model yang masih aktif di https://console.groq.com/docs/models sebelum deploy.
+LLM_MODEL = os.environ.get("LLM_MODEL", "openai/gpt-oss-120b")
 LLM_TEMPERATURE = float(os.environ.get("LLM_TEMPERATURE", "0.2"))
+# Khusus model reasoning (gpt-oss di Groq): "low" | "medium" | "high".
+# Kosongkan untuk model non-reasoning; parameter ini lalu tidak dikirim.
+LLM_REASONING_EFFORT = os.environ.get("LLM_REASONING_EFFORT", "").strip()
+# Batas token jawaban (0 = tidak dibatasi / pakai bawaan penyedia).
+LLM_MAX_TOKENS = int(os.environ.get("LLM_MAX_TOKENS", "0"))
 
-# --- Embedding: DeepSeek tidak menyediakan endpoint embedding, jadi memakai Gemini ---
+# --- Embedding: memakai Gemini (penyedia LLM tidak wajib punya endpoint embedding) ---
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "gemini-embedding-001")
 EMBEDDING_DIM = int(os.environ.get("EMBEDDING_DIM", "768"))

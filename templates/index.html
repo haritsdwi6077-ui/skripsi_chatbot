@@ -2,108 +2,351 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tanya Hama &amp; Penyakit Padi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tanya Padi: Hama &amp; Penyakit</title>
+<meta name="description" content="Tanya jawab seputar gejala, penyebab, dan cara pengendalian hama serta penyakit tanaman padi, disusun dari dokumen rujukan pertanian.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
 <style>
+  /* Tata letak: satu kolom (ramah HP). Pengantar + panduan di atas, percakapan di bawah,
+     kolom pertanyaan menempel di bawah layar. Satu elemen berani: pita sawah bertingkat. */
   :root {
-    --latar: #f6f4ee;
-    --tinta: #23301f;
-    --sekam: #e7e1d3;
-    --daun: #3f6b3a;
-    --daun-tua: #2c4d29;
-    --peringatan: #8a3324;
+    --kertas: #f5f8f0;      /* latar: hijau pucat, bukan krem */
+    --tinta: #1b2a1f;       /* teks utama */
+    --redup: #4e5f52;       /* teks pendukung */
+    --hijau-tua: #1f4d2b;   /* sawah tua */
+    --hijau: #2f7a3e;       /* daun */
+    --hijau-muda: #d5eabd;  /* padi muda */
+    --gabah: #e3b23c;       /* bulir menguning */
+    --garis: #d7e0d0;
+    --putih: #ffffff;
+    --galat: #9a2f1f;
+    --galat-latar: #fbece8;
+    --huruf-isi: "Atkinson Hyperlegible", "Segoe UI", Roboto, Arial, sans-serif;
+    --huruf-judul: "Bricolage Grotesque", "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+    --skala: 1;             /* diubah oleh tombol "Perbesar huruf" */
   }
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; font-size: calc(100% * var(--skala)); }
   body {
     margin: 0;
-    background: var(--latar);
+    background: var(--kertas);
     color: var(--tinta);
-    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
-    font-size: 17px;
+    font-family: var(--huruf-isi);
+    font-size: 1.0625rem;
     line-height: 1.6;
   }
-  .wadah { max-width: 44rem; margin: 0 auto; padding: 2rem 1.25rem 7rem; }
-  header { border-bottom: 2px solid var(--daun); padding-bottom: 1rem; }
-  h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
-  header p { margin: 0; font-size: .95rem; color: #55604f; }
-  .percakapan { margin-top: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem; }
-  .pesan { padding: .9rem 1.1rem; border-radius: .6rem; }
-  .pesan.pengguna { background: var(--daun); color: #fbfaf6; align-self: flex-end; max-width: 85%; }
-  .pesan.sistem { background: #fff; border: 1px solid var(--sekam); }
-  .pesan.galat { background: #fdf0ed; border: 1px solid var(--peringatan); color: var(--peringatan); }
-  .sumber { margin-top: .75rem; padding-top: .6rem; border-top: 1px dashed var(--sekam);
-            font-size: .85rem; color: #5b6455; }
-  .sumber ul { margin: .3rem 0 0; padding-left: 1.1rem; }
+  a { color: var(--hijau-tua); }
+  :focus-visible { outline: 3px solid var(--gabah); outline-offset: 2px; }
+  .wadah { max-width: 46rem; margin: 0 auto; padding-inline: 16px; }
+
+  /* Bilah atas */
+  .bilah {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--hijau-tua); color: #f2f7ec;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .bilah .wadah { display: flex; align-items: center; gap: 12px; min-height: 56px; }
+  .merek { font-family: var(--huruf-judul); font-weight: 800; font-size: 1.15rem; letter-spacing: -.01em; margin: 0; flex: 1; white-space: nowrap; }
+  .bilah .wadah { gap: 8px; }
+  .pendek { display: none; }
+  @media (max-width: 480px) { .panjang { display: none; } .pendek { display: inline; } .tombol-bilah { padding: 6px 12px; } }
+  .merek span { color: var(--gabah); }
+  .tombol-bilah {
+    font: inherit; font-size: .9rem; color: #f2f7ec; background: transparent;
+    border: 1.5px solid rgba(242,247,236,.45); border-radius: 999px; padding: 6px 14px; cursor: pointer;
+  }
+  .tombol-bilah:hover { border-color: var(--gabah); }
+  .tombol-bilah[aria-pressed="true"] { background: var(--gabah); color: var(--hijau-tua); border-color: var(--gabah); }
+
+  /* Pita sawah: hiasan utama */
+  .sawah { display: block; width: 100%; height: clamp(70px, 14vw, 120px); background: var(--hijau-tua); }
+
+  /* Pengantar */
+  .pengantar { padding-block: 28px 8px; display: grid; gap: 28px; }
+  .pengantar[hidden] { display: none; }
+  h1 {
+    font-family: var(--huruf-judul); font-weight: 800; letter-spacing: -.02em;
+    font-size: clamp(1.9rem, 6vw, 2.6rem); line-height: 1.08; margin: 0; text-wrap: balance; color: var(--hijau-tua);
+  }
+  .lede { font-size: 1.1rem; margin: 12px 0 0; max-width: 38em; }
+  h2 { font-family: var(--huruf-judul); font-weight: 600; font-size: 1.3rem; margin: 0 0 10px; color: var(--hijau-tua); }
+  .blok p { margin: 0 0 10px; max-width: 40em; }
+
+  .langkah { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: langkah; }
+  .langkah li { display: grid; grid-template-columns: 2.4rem 1fr; gap: 12px; align-items: start; counter-increment: langkah; }
+  .langkah li::before {
+    content: counter(langkah); width: 2.4rem; height: 2.4rem; border-radius: 50%;
+    background: var(--hijau-muda); color: var(--hijau-tua); font-weight: 700; font-size: 1.1rem;
+    display: grid; place-items: center;
+  }
+  .langkah strong { display: block; }
+
+  .topik { display: grid; gap: 14px; }
+  .kelompok { border-left: 4px solid var(--hijau-muda); padding-left: 12px; }
+  .kelompok h3 { margin: 0 0 6px; font-size: 1rem; }
+  .kelompok h3 small { font-weight: 400; color: var(--redup); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font: inherit; font-size: .95rem; text-align: left; cursor: pointer;
+    background: var(--putih); color: var(--tinta);
+    border: 1.5px solid var(--garis); border-radius: 12px; padding: 8px 12px; min-height: 44px;
+  }
+  .chip:hover { border-color: var(--hijau); background: #fbfdf8; }
+
+  .catatan { background: var(--putih); border: 1.5px solid var(--garis); border-radius: 14px; padding: 16px 18px; }
+  .catatan ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 6px; }
+
+  /* Percakapan */
+  .percakapan { padding-block: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .pesan { max-width: 100%; overflow-wrap: anywhere; scroll-margin-top: calc(72px + env(safe-area-inset-top, 0px)); scroll-margin-bottom: 24px; }
+  .pesan.pengguna {
+    align-self: flex-end; max-width: 85%;
+    background: var(--hijau); color: #fbfdf8; padding: 12px 16px; border-radius: 18px 18px 4px 18px;
+  }
+  .pesan.sistem {
+    background: var(--putih); border: 1.5px solid var(--garis); border-radius: 4px 18px 18px 18px; padding: 14px 18px;
+  }
+  .pesan.sistem p { margin: 0 0 10px; }
+  .pesan.sistem p:last-child { margin-bottom: 0; }
+  .pesan.sistem ul, .pesan.sistem ol { margin: 0 0 10px; padding-left: 1.3rem; }
+  .pesan.sistem h4 { margin: 12px 0 6px; font-size: 1.02rem; color: var(--hijau-tua); }
+  .rujuk {
+    display: inline-block; min-width: 1.4em; padding: 0 5px; margin-left: 2px;
+    font-size: .75em; line-height: 1.5; text-align: center; vertical-align: .15em;
+    background: var(--hijau-muda); color: var(--hijau-tua); border-radius: 6px; font-weight: 700;
+  }
+  .kaki { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--garis); display: grid; gap: 8px; font-size: .9rem; color: var(--redup); }
+  .kaki details summary { cursor: pointer; color: var(--hijau-tua); font-weight: 700; }
+  .kaki ol { margin: 6px 0 0; padding-left: 1.3rem; }
+  .kaki-baris { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+  .salin { font: inherit; font-size: .85rem; background: none; border: 0; padding: 0; color: var(--hijau-tua); text-decoration: underline; cursor: pointer; }
+  .pesan.galat { background: var(--galat-latar); border: 1.5px solid var(--galat); color: var(--galat); padding: 12px 16px; border-radius: 12px; }
+  .menunggu { color: var(--redup); display: flex; align-items: center; gap: 10px; }
+  .titik { display: inline-flex; gap: 4px; }
+  .titik i { width: 7px; height: 7px; border-radius: 50%; background: var(--hijau); animation: angguk 1s infinite ease-in-out; }
+  .titik i:nth-child(2) { animation-delay: .15s; }
+  .titik i:nth-child(3) { animation-delay: .3s; }
+  @keyframes angguk { 0%, 80%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+  @media (prefers-reduced-motion: reduce) { .titik i { animation: none; opacity: .7; } }
+
+  /* Kolom pertanyaan */
+  .ruang-bawah { height: 140px; }
   form {
-    position: fixed; inset: auto 0 0 0; background: var(--latar);
-    border-top: 1px solid var(--sekam); padding: .9rem 1.25rem;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
+    background: var(--kertas); border-top: 1.5px solid var(--garis);
+    padding-block: 10px calc(10px + env(safe-area-inset-bottom, 0px));
   }
-  .baris { max-width: 44rem; margin: 0 auto; display: flex; gap: .6rem; }
-  input {
-    flex: 1; padding: .7rem .9rem; font: inherit; font-size: 16px;
-    border: 1px solid #c9c2b2; border-radius: .5rem; background: #fff; color: inherit;
+  .baris { display: flex; gap: 8px; align-items: flex-end; }
+  textarea {
+    flex: 1; min-width: 0; resize: none; max-height: 9rem;
+    font: inherit; font-size: max(16px, 1rem); line-height: 1.4;
+    padding: 12px 14px; border: 1.5px solid #b9c7b2; border-radius: 14px; background: var(--putih); color: var(--tinta);
   }
-  input:focus-visible, button:focus-visible { outline: 3px solid var(--daun); outline-offset: 2px; }
-  button {
-    padding: .7rem 1.2rem; font: inherit; border: 0; border-radius: .5rem;
-    background: var(--daun-tua); color: #fbfaf6; cursor: pointer;
+  textarea:focus { border-color: var(--hijau); outline: none; box-shadow: 0 0 0 3px rgba(47,122,62,.2); }
+  .kirim {
+    font: inherit; font-weight: 700; min-height: 48px; padding: 0 20px; border: 0; border-radius: 14px;
+    background: var(--hijau-tua); color: #fbfdf8; cursor: pointer;
   }
-  button:disabled { opacity: .55; cursor: progress; }
-  .kosong { color: #6a7264; }
+  .kirim:hover { background: var(--hijau); }
+  .kirim:disabled { opacity: .55; cursor: progress; }
+  .petunjuk { margin: 6px 0 0; font-size: .8rem; color: var(--redup); }
 </style>
 </head>
 <body>
-<div class="wadah">
-  <header>
-    <h1>Tanya Hama &amp; Penyakit Padi</h1>
-    <p>Jawaban disusun dari dokumen rujukan yang tersimpan pada basis pengetahuan.</p>
-  </header>
 
-  <div class="percakapan" id="percakapan">
-    <div class="pesan sistem kosong">
-      Tanyakan gejala, penyebab, atau cara pengendalian. Contoh: apa gejala awal penyakit blas pada daun padi?
-    </div>
+<header class="bilah">
+  <div class="wadah">
+    <p class="merek">Tanya <span>Padi</span></p>
+    <button class="tombol-bilah" id="tombolHuruf" type="button" aria-pressed="false" aria-label="Perbesar huruf"><span class="panjang">Perbesar huruf</span><span class="pendek" aria-hidden="true">A+</span></button>
+    <button class="tombol-bilah" id="tombolPanduan" type="button" aria-controls="pengantar" aria-expanded="true">Panduan</button>
   </div>
-</div>
+</header>
+
+<!-- Pita sawah bertingkat (hiasan) -->
+<svg class="sawah" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0 26 C200 8 380 40 600 22 S1000 6 1200 20 V120 H0Z" fill="#2f7a3e"/>
+  <path d="M0 50 C240 34 420 66 640 48 S1010 32 1200 46 V120 H0Z" fill="#4c9a4f"/>
+  <path d="M0 72 C210 58 470 88 700 70 S1040 56 1200 68 V120 H0Z" fill="#8fc46d"/>
+  <path d="M0 92 C260 80 500 106 760 90 S1060 80 1200 90 V120 H0Z" fill="#e3b23c"/>
+  <path d="M0 108 C300 100 560 118 820 106 S1080 100 1200 106 V120 H0Z" fill="#f5f8f0"/>
+</svg>
+
+<main class="wadah">
+  <section class="pengantar" id="pengantar" aria-label="Panduan aplikasi">
+    <div>
+      <h1>Tanyakan masalah hama dan penyakit padi Anda</h1>
+      <p class="lede">Tulis apa yang Anda lihat di sawah, misalnya daun menguning atau batang berlubang. Aplikasi ini akan menjawab dengan bahasa sederhana dan menunjukkan dari buku atau dokumen mana jawabannya diambil.</p>
+    </div>
+
+    <div class="blok">
+      <h2>Apa gunanya aplikasi ini?</h2>
+      <p>Tanya Padi membantu petani, penyuluh, dan siapa saja yang ingin tahu tentang <strong>gejala</strong>, <strong>penyebab</strong>, dan <strong>cara mengendalikan</strong> hama serta penyakit padi.</p>
+      <p>Jawabannya tidak dikarang. Sistem lebih dulu mencari bagian yang cocok di kumpulan buku panduan dan tulisan ilmiah pertanian, lalu kecerdasan buatan merangkumnya menjadi jawaban singkat. Nama sumbernya selalu ditampilkan di bawah jawaban.</p>
+    </div>
+
+    <div class="blok">
+      <h2>Cara memakainya</h2>
+      <ol class="langkah">
+        <li><div><strong>Tulis pertanyaan di kolom paling bawah</strong>Pakai bahasa sehari-hari. Ceritakan bagian tanaman yang sakit, warnanya, atau umur padinya. Bisa juga ketuk salah satu contoh di bawah.</div></li>
+        <li><div><strong>Tekan tombol Tanya</strong>Tunggu beberapa detik selama sistem mencari di dokumen rujukan.</div></li>
+        <li><div><strong>Baca jawaban dan sumbernya</strong>Angka kecil seperti <span class="rujuk">1</span> menunjukkan dokumen asal informasinya. Ketuk "Sumber rujukan" untuk melihat daftar lengkapnya.</div></li>
+      </ol>
+    </div>
+
+    <div class="blok">
+      <h2>Coba salah satu pertanyaan ini</h2>
+      <div class="topik" id="contoh"></div>
+    </div>
+
+    <aside class="catatan" aria-label="Hal yang perlu diingat">
+      <h2>Perlu diingat</h2>
+      <ul>
+        <li>Aplikasi ini hanya membahas <strong>hama dan penyakit tanaman padi</strong>. Pertanyaan lain tidak akan terjawab.</li>
+        <li>Kalau informasinya tidak ada di dokumen rujukan, aplikasi akan mengatakannya terus terang.</li>
+        <li>Jawaban di sini adalah bahan pertimbangan, bukan pengganti penyuluh. Bila serangan meluas, hubungi penyuluh pertanian atau petugas POPT setempat.</li>
+        <li>Bila memakai pestisida, ikuti dosis dan petunjuk keselamatan pada label kemasannya.</li>
+      </ul>
+    </aside>
+  </section>
+
+  <section class="percakapan" id="percakapan" aria-live="polite" aria-label="Percakapan"></section>
+  <div class="ruang-bawah"></div>
+</main>
 
 <form id="form">
-  <div class="baris">
-    <input id="pertanyaan" autocomplete="off" placeholder="Tulis pertanyaan Anda" aria-label="Pertanyaan">
-    <button id="kirim" type="submit">Tanya</button>
+  <div class="wadah">
+    <div class="baris">
+      <textarea id="pertanyaan" rows="1" placeholder="Tulis pertanyaan…" aria-label="Tulis pertanyaan Anda"></textarea>
+      <button class="kirim" id="kirim" type="submit">Tanya</button>
+    </div>
+    <p class="petunjuk">Jawaban diambil dari dokumen rujukan dan bisa kurang lengkap. Periksa sumbernya.</p>
   </div>
 </form>
 
 <script>
+  const CONTOH = [
+    { topik: 'Blas', ket: 'penyakit jamur', tanya: [
+      'Apa gejala penyakit blas pada daun padi?',
+      'Bagaimana cara mencegah blas leher malai?' ] },
+    { topik: 'Kresek / hawar daun bakteri', ket: 'penyakit bakteri', tanya: [
+      'Daun padi mengering dari ujung dan pinggirnya, apakah itu kresek?',
+      'Bagaimana mengendalikan penyakit kresek?' ] },
+    { topik: 'Bercak cokelat', ket: 'penyakit jamur', tanya: [
+      'Seperti apa gejala bercak cokelat pada padi?',
+      'Apa penyebab penyakit bercak cokelat?' ] },
+    { topik: 'Tungro', ket: 'penyakit virus', tanya: [
+      'Daun padi menguning oranye dan tanaman kerdil, apakah itu tungro?',
+      'Bagaimana cara mengendalikan wereng hijau penular tungro?' ] },
+    { topik: 'Wereng batang cokelat', ket: 'hama', tanya: [
+      'Apa tanda serangan wereng batang cokelat?',
+      'Kapan wereng cokelat perlu dikendalikan dengan insektisida?' ] },
+    { topik: 'Penggerek batang', ket: 'hama', tanya: [
+      'Apa itu sundep dan beluk?',
+      'Bagaimana mengendalikan penggerek batang padi?' ] },
+  ];
+
   const percakapan = document.getElementById('percakapan');
+  const pengantar = document.getElementById('pengantar');
   const form = document.getElementById('form');
   const input = document.getElementById('pertanyaan');
   const tombol = document.getElementById('kirim');
+  const tombolPanduan = document.getElementById('tombolPanduan');
+  const tombolHuruf = document.getElementById('tombolHuruf');
 
-  function tambah(kelas, isi) {
+  // Contoh pertanyaan per topik
+  const wadahContoh = document.getElementById('contoh');
+  CONTOH.forEach((k) => {
+    const g = document.createElement('div');
+    g.className = 'kelompok';
+    g.innerHTML = '<h3>' + k.topik + ' <small>(' + k.ket + ')</small></h3><div class="chips"></div>';
+    const chips = g.querySelector('.chips');
+    k.tanya.forEach((t) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip'; b.textContent = t;
+      b.addEventListener('click', () => kirim(t));
+      chips.appendChild(b);
+    });
+    wadahContoh.appendChild(g);
+  });
+
+  // Panduan bisa dibuka-tutup
+  function aturPanduan(tampil) {
+    pengantar.hidden = !tampil;
+    tombolPanduan.setAttribute('aria-expanded', String(tampil));
+    tombolPanduan.textContent = tampil ? 'Tutup' : 'Panduan';
+    if (tampil) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  tombolPanduan.addEventListener('click', () => aturPanduan(pengantar.hidden));
+  tombolPanduan.textContent = 'Tutup';
+
+  // Perbesar huruf (diingat di perangkat ini bila memungkinkan)
+  function aturHuruf(besar) {
+    document.documentElement.style.setProperty('--skala', besar ? '1.2' : '1');
+    tombolHuruf.setAttribute('aria-pressed', String(besar));
+    tombolHuruf.querySelector('.panjang').textContent = besar ? 'Huruf normal' : 'Perbesar huruf';
+    tombolHuruf.querySelector('.pendek').textContent = besar ? 'A−' : 'A+';
+    tombolHuruf.setAttribute('aria-label', besar ? 'Kembalikan ukuran huruf' : 'Perbesar huruf');
+    try { localStorage.setItem('tanyaPadiHurufBesar', besar ? '1' : '0'); } catch (e) {}
+  }
+  try { if (localStorage.getItem('tanyaPadiHurufBesar') === '1') aturHuruf(true); } catch (e) {}
+  tombolHuruf.addEventListener('click', () => aturHuruf(tombolHuruf.getAttribute('aria-pressed') !== 'true'));
+
+  // Kolom teks ikut tinggi; Enter = kirim, Shift+Enter = baris baru
+  function sesuaikanTinggi() { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 144) + 'px'; }
+  input.addEventListener('input', sesuaikanTinggi);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+  });
+
+  function escapeHtml(teks) {
+    return String(teks).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  }
+
+  // Ubah teks jawaban (format markdown sederhana) menjadi HTML yang aman
+  function rapikan(teks) {
+    const inline = (s) => escapeHtml(s)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^*])\*(?!\s)(.+?)\*(?!\*)/g, '$1<em>$2</em>')
+      .replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (m, isi) =>
+        isi.split(',').map((n) => '<span class="rujuk" title="Sumber nomor ' + n.trim() + '">' + n.trim() + '</span>').join(''));
+    const baris = String(teks).replace(/\r/g, '').split('\n');
+    let html = '', daftar = null, paragraf = [];
+    const tutupParagraf = () => { if (paragraf.length) { html += '<p>' + paragraf.map(inline).join('<br>') + '</p>'; paragraf = []; } };
+    const tutupDaftar = () => { if (daftar) { html += '</' + daftar + '>'; daftar = null; } };
+    for (const b of baris) {
+      const s = b.trim();
+      let m;
+      if (!s) { tutupParagraf(); tutupDaftar(); continue; }
+      if ((m = s.match(/^#{1,6}\s+(.*)$/))) { tutupParagraf(); tutupDaftar(); html += '<h4>' + inline(m[1]) + '</h4>'; continue; }
+      if ((m = s.match(/^[-*•]\s+(.*)$/))) { tutupParagraf(); if (daftar !== 'ul') { tutupDaftar(); html += '<ul>'; daftar = 'ul'; } html += '<li>' + inline(m[1]) + '</li>'; continue; }
+      if ((m = s.match(/^\d+[.)]\s+(.*)$/))) { tutupParagraf(); if (daftar !== 'ol') { tutupDaftar(); html += '<ol>'; daftar = 'ol'; } html += '<li>' + inline(m[1]) + '</li>'; continue; }
+      tutupDaftar(); paragraf.push(s);
+    }
+    tutupParagraf(); tutupDaftar();
+    return html || '<p></p>';
+  }
+
+  function tambah(kelas, html) {
     const el = document.createElement('div');
     el.className = 'pesan ' + kelas;
-    el.innerHTML = isi;
+    el.innerHTML = html;
     percakapan.appendChild(el);
-    el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     return el;
   }
 
-  function escapeHtml(teks) {
-    return teks.replace(/[&<>"']/g, (c) => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    })[c]);
-  }
+  async function kirim(pertanyaan) {
+    pertanyaan = (pertanyaan || '').trim();
+    if (!pertanyaan || tombol.disabled) return;
+    if (!pengantar.hidden) aturPanduan(false);
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const pertanyaan = input.value.trim();
-    if (!pertanyaan) return;
-
-    document.querySelector('.kosong')?.remove();
     tambah('pengguna', escapeHtml(pertanyaan));
-    input.value = '';
+    input.value = ''; sesuaikanTinggi();
     tombol.disabled = true;
-    const menunggu = tambah('sistem kosong', 'Mencari dokumen dan menyusun jawaban…');
+    const menunggu = tambah('sistem menunggu',
+      '<span class="titik" aria-hidden="true"><i></i><i></i><i></i></span> Sedang mencari di dokumen rujukan…');
 
     try {
       const res = await fetch('/api/chat', {
@@ -111,29 +354,50 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: pertanyaan })
       });
-      const data = await res.json();
+      let data = {};
+      try { data = await res.json(); } catch (e) {}
       menunggu.remove();
 
       if (!res.ok) {
-        tambah('galat', escapeHtml(data.error || 'Permintaan gagal diproses.'));
+        tambah('galat', escapeHtml(data.error || 'Server tidak dapat memproses pertanyaan ini. Coba kirim ulang beberapa saat lagi.'));
         return;
       }
 
-      let isi = escapeHtml(data.answer).replace(/\n/g, '<br>');
-      if (data.sources?.length) {
-        isi += '<div class="sumber">Sumber rujukan<ul>' +
-          data.sources.map((s) => '<li>' + escapeHtml(s) + '</li>').join('') +
-          '</ul></div>';
+      let html = rapikan(data.answer || '');
+      const sumber = data.sources || [];
+      const detik = data.timing && typeof data.timing.total_s === 'number' ? data.timing.total_s : null;
+      html += '<div class="kaki">';
+      if (sumber.length) {
+        html += '<details><summary>Sumber rujukan (' + sumber.length + ' dokumen)</summary><ol>' +
+          sumber.map((s) => '<li>' + escapeHtml(s) + '</li>').join('') + '</ol></details>';
       }
-      tambah('sistem', isi);
+      html += '<div class="kaki-baris">' +
+        (detik !== null ? '<span>Dijawab dalam ' + detik.toFixed(1).replace('.', ',') + ' detik</span>' : '') +
+        '<button type="button" class="salin">Salin jawaban</button></div></div>';
+      const el = tambah('sistem', html);
+      el.querySelector('.salin').addEventListener('click', (e) => {
+        const tombolSalin = e.currentTarget;
+        const teks = data.answer || '';
+        const selesai = () => { tombolSalin.textContent = 'Jawaban disalin'; setTimeout(() => (tombolSalin.textContent = 'Salin jawaban'), 2000); };
+        if (navigator.clipboard) navigator.clipboard.writeText(teks).then(selesai).catch(() => {});
+      });
     } catch (err) {
       menunggu.remove();
-      tambah('galat', 'Tidak dapat menghubungi server. Periksa koneksi lalu coba lagi.');
+      tambah('galat', 'Tidak tersambung ke server. Periksa sinyal atau koneksi internet, lalu tekan Tanya lagi.');
     } finally {
       tombol.disabled = false;
       input.focus();
     }
-  });
+  }
+
+  form.addEventListener('submit', (e) => { e.preventDefault(); kirim(input.value); });
+
+  // Ruang kosong di bawah halaman mengikuti tinggi kolom pertanyaan, agar jawaban tidak tertutup
+  const ruangBawah = document.querySelector('.ruang-bawah');
+  const aturRuang = () => { ruangBawah.style.height = (form.offsetHeight + 16) + 'px'; };
+  if ('ResizeObserver' in window) new ResizeObserver(aturRuang).observe(form);
+  window.addEventListener('resize', aturRuang);
+  aturRuang();
 </script>
 </body>
 </html>

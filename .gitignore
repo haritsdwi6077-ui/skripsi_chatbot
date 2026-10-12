@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 .vercel
 hasil_evaluasi*.csv
+.cache/

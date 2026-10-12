@@ -30,4 +30,8 @@ def run_cli_interface() -> None:
         for i, ctx in enumerate(hasil["contexts"], start=1):
             halaman = f" (hlm. {ctx['page']})" if ctx.get("page") else ""
             print(f"- {i}. {ctx['source']}{halaman}  skor={ctx['score']:.4f}")
+        w = hasil.get("timing", {})
+        if w:
+            print(f"\n[Waktu] retrieval {w['retrieval_s']:.2f} s | "
+                  f"generation {w['generation_s']:.2f} s | total {w['total_s']:.2f} s")
 

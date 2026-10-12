@@ -46,6 +46,7 @@ def chat():
         {
             "answer": hasil["answer"],
             "sources": engine.format_sources(hasil["contexts"]),
+            "timing": hasil.get("timing", {}),
         }
     )
 
