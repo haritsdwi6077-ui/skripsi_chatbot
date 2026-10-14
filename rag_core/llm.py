@@ -23,6 +23,7 @@ def generate_detail(
     api_key: str | None = None,
     temperature: float | None = None,
     reasoning_effort: str | None = None,
+    riwayat: list[dict] | None = None,
 ) -> dict:
     """Kirim prompt ke LLM; kembalikan jawaban beserta waktu dan pemakaian token.
 
@@ -41,6 +42,10 @@ def generate_detail(
     messages = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
+    # Giliran percakapan sebelumnya (opsional): [{"question": ..., "answer": ...}]
+    for giliran in riwayat or []:
+        messages.append({"role": "user", "content": giliran["question"]})
+        messages.append({"role": "assistant", "content": giliran["answer"]})
     messages.append({"role": "user", "content": prompt})
 
     body = {
@@ -54,13 +59,26 @@ def generate_detail(
     if config.LLM_MAX_TOKENS > 0:
         body["max_tokens"] = config.LLM_MAX_TOKENS
 
-    mulai = time.perf_counter()
-    response = requests.post(
-        f"{base_url}/chat/completions",
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        json=body,
-        timeout=config.REQUEST_TIMEOUT,
-    )
+    # Gangguan jaringan sesaat diulang maksimal 3 kali. Waktu respons yang
+    # dilaporkan hanya dari percobaan yang berhasil, agar pengukuran kecepatan
+    # tidak ikut menghitung waktu tunggu karena koneksi putus.
+    for ke in range(1, 4):
+        mulai = time.perf_counter()
+        try:
+            response = requests.post(
+                f"{base_url}/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                json=body,
+                timeout=config.REQUEST_TIMEOUT,
+            )
+            break
+        except (requests.ConnectionError, requests.Timeout) as exc:
+            if ke == 3:
+                raise RuntimeError(
+                    f"Tidak bisa terhubung ke LLM ({base_url}). "
+                    f"Periksa koneksi internet. Detail: {exc}"
+                ) from exc
+            time.sleep(2 * ke)
     latency = time.perf_counter() - mulai
     if not response.ok:
         raise RuntimeError(f"LLM {response.status_code} (model={model}): {response.text[:500]}")

@@ -1,0 +1,10 @@
+[
+  {
+    "question": "Apa gejala awal penyakit blas pada daun padi?",
+    "ground_truth": "Gejala awal berupa bercak kecil berbentuk belah ketupat pada daun dengan bagian tengah keabu-abuan dan tepi cokelat."
+  },
+  {
+    "question": "Bagaimana cara mengendalikan wereng batang cokelat?",
+    "ground_truth": "Pengendalian dilakukan dengan penanaman varietas tahan, tanam serempak, pemantauan populasi, pelestarian musuh alami, serta penggunaan insektisida secara selektif sesuai ambang kendali."
+  }
+]

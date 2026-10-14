@@ -112,14 +112,23 @@
   .pesan.sistem p:last-child { margin-bottom: 0; }
   .pesan.sistem ul, .pesan.sistem ol { margin: 0 0 10px; padding-left: 1.3rem; }
   .pesan.sistem h4 { margin: 12px 0 6px; font-size: 1.02rem; color: var(--hijau-tua); }
+  .pesan.sistem li { margin-bottom: 4px; }
+  .pesan.sistem li.anak { margin-left: 1.3rem; list-style-type: circle; }
+  .tabel-bungkus { overflow-x: auto; margin: 0 0 12px; }
+  .tabel-bungkus table { border-collapse: collapse; width: 100%; min-width: 480px; font-size: .92rem; }
+  .tabel-bungkus th, .tabel-bungkus td { border: 1px solid var(--garis); padding: 8px 10px; text-align: left; vertical-align: top; }
+  .tabel-bungkus th { background: var(--hijau-muda); color: var(--hijau-tua); }
   .rujuk {
     display: inline-block; min-width: 1.4em; padding: 0 5px; margin-left: 2px;
     font-size: .75em; line-height: 1.5; text-align: center; vertical-align: .15em;
     background: var(--hijau-muda); color: var(--hijau-tua); border-radius: 6px; font-weight: 700;
   }
   .kaki { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--garis); display: grid; gap: 8px; font-size: .9rem; color: var(--redup); }
+  .tafsir { font-size: .85rem; color: var(--redup); margin: 0 0 8px; font-style: italic; }
   .kaki details summary { cursor: pointer; color: var(--hijau-tua); font-weight: 700; }
   .kaki ol { margin: 6px 0 0; padding-left: 1.3rem; }
+  .daftar-sumber { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+  .daftar-sumber .rujuk { margin: 0 6px 0 0; }
   .kaki-baris { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
   .salin { font: inherit; font-size: .85rem; background: none; border: 0; padding: 0; color: var(--hijau-tua); text-decoration: underline; cursor: pointer; }
   .pesan.galat { background: var(--galat-latar); border: 1.5px solid var(--galat); color: var(--galat); padding: 12px 16px; border-radius: 12px; }
@@ -151,6 +160,20 @@
   }
   .kirim:hover { background: var(--hijau); }
   .kirim:disabled { opacity: .55; cursor: progress; }
+
+  /* Pilihan mode jawaban (pembanding penelitian) */
+  .mode { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 8px; border: 0; padding: 0; }
+  .mode legend { float: left; font-size: .85rem; font-weight: 700; color: var(--redup); margin-right: 2px; padding: 0; }
+  .mode-pilih { display: inline-flex; border: 1.5px solid var(--garis); border-radius: 999px; background: var(--putih); padding: 2px; }
+  .mode-pilih label { position: relative; cursor: pointer; }
+  .mode-pilih input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .mode-pilih span { display: block; padding: 4px 14px; border-radius: 999px; font-size: .88rem; font-weight: 700; color: var(--redup); }
+  .mode-pilih input:checked + span { background: var(--hijau-tua); color: #fbfdf8; }
+  .mode-pilih input:focus-visible + span { outline: 3px solid rgba(47,122,62,.35); outline-offset: 1px; }
+  .lencana-mode { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .02em; padding: 1px 10px; border-radius: 999px; margin: 0 0 8px; }
+  .lencana-mode.rag { background: var(--hijau-muda); color: var(--hijau-tua); }
+  .lencana-mode.llm { background: #f6e3b4; color: #6b4a00; }
+  .pemisah-mode { align-self: center; font-size: .82rem; color: var(--redup); border: 1px dashed var(--garis); border-radius: 999px; padding: 2px 12px; }
   .petunjuk { margin: 6px 0 0; font-size: .8rem; color: var(--redup); }
 </style>
 </head>
@@ -160,6 +183,7 @@
   <div class="wadah">
     <p class="merek">Tanya <span>Padi</span></p>
     <button class="tombol-bilah" id="tombolHuruf" type="button" aria-pressed="false" aria-label="Perbesar huruf"><span class="panjang">Perbesar huruf</span><span class="pendek" aria-hidden="true">A+</span></button>
+    <button class="tombol-bilah" id="tombolBaru" type="button" aria-label="Mulai percakapan baru"><span class="panjang">Percakapan baru</span><span class="pendek" aria-hidden="true">Baru</span></button>
     <button class="tombol-bilah" id="tombolPanduan" type="button" aria-controls="pengantar" aria-expanded="true">Panduan</button>
   </div>
 </header>
@@ -217,6 +241,15 @@
 
 <form id="form">
   <div class="wadah">
+    {% if tampilkan_mode %}
+    <fieldset class="mode" id="pilihanMode">
+      <legend>Mode jawaban:</legend>
+      <div class="mode-pilih">
+        <label><input type="radio" name="mode" value="rag" checked><span>Dengan RAG</span></label>
+        <label><input type="radio" name="mode" value="llm"><span>Tanpa RAG</span></label>
+      </div>
+    </fieldset>
+    {% endif %}
     <div class="baris">
       <textarea id="pertanyaan" rows="1" placeholder="Tulis pertanyaan…" aria-label="Tulis pertanyaan Anda"></textarea>
       <button class="kirim" id="kirim" type="submit">Tanya</button>
@@ -311,20 +344,38 @@
       .replace(/(^|[^*])\*(?!\s)(.+?)\*(?!\*)/g, '$1<em>$2</em>')
       .replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (m, isi) =>
         isi.split(',').map((n) => '<span class="rujuk" title="Sumber nomor ' + n.trim() + '">' + n.trim() + '</span>').join(''));
-    const baris = String(teks).replace(/\r/g, '').split('\n');
-    let html = '', daftar = null, paragraf = [];
+    const baris = String(teks).replace(/\r/g, '').replace(/[\u2011\u2010]/g, '-').replace(/\u00a0/g, ' ')
+      .replace(/【\s*(\d+)[^】]*】/g, '[$1]')   // gaya sitasi gpt-oss: 【1】 menjadi [1]
+      .split('\n');
+    const pecahBr = (s) => s.split(/<br\s*\/?>/i).map((x) => x.trim()).filter(Boolean);
+    let html = '', daftar = null, paragraf = [], tabel = [];
+    const tutupTabel = () => {
+      if (!tabel.length) return;
+      const sel = (r) => r.replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+      const pemisah = (r) => /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?$/.test(r);
+      const isi = (c) => pecahBr(c).map(inline).join('<br>');
+      const punyaJudul = tabel.length > 1 && pemisah(tabel[1]);
+      const data = tabel.filter((r) => !pemisah(r));
+      let t = '<div class="tabel-bungkus"><table>';
+      if (punyaJudul) t += '<thead><tr>' + sel(data.shift()).map((c) => '<th>' + isi(c) + '</th>').join('') + '</tr></thead>';
+      t += '<tbody>' + data.map((r) => '<tr>' + sel(r).map((c) => '<td>' + isi(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+      html += t; tabel = [];
+    };
     const tutupParagraf = () => { if (paragraf.length) { html += '<p>' + paragraf.map(inline).join('<br>') + '</p>'; paragraf = []; } };
     const tutupDaftar = () => { if (daftar) { html += '</' + daftar + '>'; daftar = null; } };
     for (const b of baris) {
       const s = b.trim();
+      const anak = /^(\s{2,}|\t)/.test(b) ? ' class="anak"' : '';
       let m;
-      if (!s) { tutupParagraf(); tutupDaftar(); continue; }
+      if (s.startsWith('|')) { tutupParagraf(); tutupDaftar(); tabel.push(s); continue; }
+      tutupTabel();
+      if (!s || /^(-{3,}|\*{3,}|_{3,})$/.test(s)) { tutupParagraf(); tutupDaftar(); continue; }
       if ((m = s.match(/^#{1,6}\s+(.*)$/))) { tutupParagraf(); tutupDaftar(); html += '<h4>' + inline(m[1]) + '</h4>'; continue; }
-      if ((m = s.match(/^[-*•]\s+(.*)$/))) { tutupParagraf(); if (daftar !== 'ul') { tutupDaftar(); html += '<ul>'; daftar = 'ul'; } html += '<li>' + inline(m[1]) + '</li>'; continue; }
-      if ((m = s.match(/^\d+[.)]\s+(.*)$/))) { tutupParagraf(); if (daftar !== 'ol') { tutupDaftar(); html += '<ol>'; daftar = 'ol'; } html += '<li>' + inline(m[1]) + '</li>'; continue; }
-      tutupDaftar(); paragraf.push(s);
+      if ((m = s.match(/^[-*•]\s+(.*)$/))) { tutupParagraf(); if (daftar !== 'ul') { tutupDaftar(); html += '<ul>'; daftar = 'ul'; } html += '<li' + anak + '>' + pecahBr(m[1]).map(inline).join('<br>') + '</li>'; continue; }
+      if ((m = s.match(/^\d+[.)]\s+(.*)$/))) { tutupParagraf(); if (daftar !== 'ol') { tutupDaftar(); html += '<ol>'; daftar = 'ol'; } html += '<li' + anak + '>' + pecahBr(m[1]).map(inline).join('<br>') + '</li>'; continue; }
+      tutupDaftar(); paragraf.push(...pecahBr(s));
     }
-    tutupParagraf(); tutupDaftar();
+    tutupTabel(); tutupParagraf(); tutupDaftar();
     return html || '<p></p>';
   }
 
@@ -336,6 +387,45 @@
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     return el;
   }
+
+  // Riwayat percakapan disimpan di browser dan dikirim ke server pada setiap
+  // pertanyaan, agar pertanyaan lanjutan ("cara pencegahannya?") tetap nyambung.
+  const MAKS_RIWAYAT = 3;
+  const riwayat = [];
+
+  // Mode jawaban: "rag" (dari dokumen) atau "llm" (LLM saja, pembanding).
+  // Bisa dibuka langsung lewat alamat, misalnya http://127.0.0.1:5000/?mode=llm
+  const NAMA_MODE = { rag: 'Dengan RAG', llm: 'Tanpa RAG' };
+  const PETUNJUK = {
+    rag: 'Jawaban diambil dari dokumen rujukan dan bisa kurang lengkap. Periksa sumbernya.',
+    llm: 'Mode pembanding: jawaban langsung dari LLM tanpa dokumen rujukan, jadi tidak ada daftar sumber.'
+  };
+  const petunjuk = document.querySelector('.petunjuk');
+  const radioMode = document.querySelectorAll('input[name="mode"]');
+  let mode = 'rag';
+  function aturMode(baru, catat) {
+    if (!NAMA_MODE[baru] || !radioMode.length) baru = 'rag';
+    if (baru === mode && !catat) return;
+    mode = baru;
+    radioMode.forEach((r) => { r.checked = r.value === mode; });
+    if (petunjuk) petunjuk.textContent = PETUNJUK[mode];
+    // Riwayat tidak dibawa lintas mode, agar jawaban tiap mode tidak saling memengaruhi
+    riwayat.length = 0;
+    if (catat && percakapan.children.length) {
+      const p = document.createElement('div');
+      p.className = 'pesan pemisah-mode';
+      p.textContent = 'Mode diganti ke ' + NAMA_MODE[mode] + ', percakapan dimulai ulang';
+      percakapan.appendChild(p);
+    }
+  }
+  radioMode.forEach((r) => r.addEventListener('change', () => aturMode(r.value, true)));
+  aturMode(new URLSearchParams(location.search).get('mode') || 'rag', false);
+  document.getElementById('tombolBaru').addEventListener('click', () => {
+    riwayat.length = 0;
+    percakapan.innerHTML = '';
+    aturPanduan(true);
+    input.focus();
+  });
 
   async function kirim(pertanyaan) {
     pertanyaan = (pertanyaan || '').trim();
@@ -352,7 +442,7 @@
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: pertanyaan })
+        body: JSON.stringify({ question: pertanyaan, history: riwayat.slice(-MAKS_RIWAYAT), mode: mode })
       });
       let data = {};
       try { data = await res.json(); } catch (e) {}
@@ -363,13 +453,23 @@
         return;
       }
 
-      let html = rapikan(data.answer || '');
+      riwayat.push({ question: pertanyaan, answer: data.answer || '' });
+      if (riwayat.length > MAKS_RIWAYAT) riwayat.shift();
+
+      let html = '';
+      const modeJawab = data.mode === 'llm' ? 'llm' : 'rag';
+      if (radioMode.length) html += '<span class="lencana-mode ' + modeJawab + '">' + NAMA_MODE[modeJawab] + '</span>';
+      const tafsir = (data.standalone_question || '').trim();
+      if (tafsir && tafsir !== pertanyaan) html += '<p class="tafsir">Ditafsirkan sebagai: ' + escapeHtml(tafsir) + '</p>';
+      html += rapikan(data.answer || '');
       const sumber = data.sources || [];
       const detik = data.timing && typeof data.timing.total_s === 'number' ? data.timing.total_s : null;
       html += '<div class="kaki">';
       if (sumber.length) {
-        html += '<details><summary>Sumber rujukan (' + sumber.length + ' dokumen)</summary><ol>' +
-          sumber.map((s) => '<li>' + escapeHtml(s) + '</li>').join('') + '</ol></details>';
+        // Hanya sumber yang dikutip di jawaban; nomornya sama dengan lencana di jawaban
+        html += '<details><summary>Sumber rujukan (' + sumber.length + ')</summary><ul class="daftar-sumber">' +
+          sumber.map((s) => '<li>' + escapeHtml(s).replace(/^\[(\d+)\]\s*/, '<span class="rujuk">$1</span> ') + '</li>').join('') +
+          '</ul></details>';
       }
       html += '<div class="kaki-baris">' +
         (detik !== null ? '<span>Dijawab dalam ' + detik.toFixed(1).replace('.', ',') + ' detik</span>' : '') +

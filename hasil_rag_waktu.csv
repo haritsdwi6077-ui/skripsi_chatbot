@@ -1,0 +1,3 @@
+user_input,model,mode,retrieval_s,generation_s,total_s,prompt_tokens,completion_tokens,reasoning_tokens
+Apa gejala awal penyakit blas pada daun padi?,openai/gpt-oss-120b,rag,2.859,2.372,5.232,1863,596,472
+Bagaimana cara mengendalikan wereng batang cokelat?,openai/gpt-oss-120b,rag,1.004,2.142,3.147,1740,570,286

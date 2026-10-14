@@ -44,6 +44,17 @@ def ensure_collection(recreate: bool = False) -> None:
         print(f"Collection '{config.QDRANT_COLLECTION}' dibuat "
               f"(dimensi {config.EMBEDDING_DIM}, jarak cosine).")
 
+    # Indeks kata kunci untuk field "topik", dipakai untuk menyaring pencarian per
+    # topik dan untuk mendaftar topik yang ada. Aman dipanggil berulang kali.
+    try:
+        client.create_payload_index(
+            collection_name=config.QDRANT_COLLECTION,
+            field_name="topik",
+            field_schema=models.PayloadSchemaType.KEYWORD,
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Peringatan: indeks topik tidak dibuat ({exc.__class__.__name__}).")
+
 
 def upsert(points: list[models.PointStruct]) -> None:
     get_client().upsert(collection_name=config.QDRANT_COLLECTION, points=points)
@@ -53,22 +64,54 @@ def count() -> int:
     return get_client().count(config.QDRANT_COLLECTION, exact=True).count
 
 
-def search(vector: list[float], top_k: int) -> list[dict]:
-    """Mencari top-k potongan dokumen paling mirip dengan vektor kueri."""
+@lru_cache(maxsize=1)
+def daftar_topik() -> tuple[str, ...]:
+    """Topik (subfolder data_source) yang ada di collection, tanpa "-".
+
+    Memakai facet Qdrant pada field "topik". Kosong bila collection dibangun
+    tanpa subfolder atau server tidak mendukung facet.
+    """
+    try:
+        hasil = get_client().facet(
+            collection_name=config.QDRANT_COLLECTION, key="topik", limit=200
+        )
+        return tuple(sorted(str(h.value) for h in hasil.hits if str(h.value) != "-"))
+    except Exception:  # noqa: BLE001
+        return ()
+
+
+def search(vector: list[float], top_k: int, with_vectors: bool = False,
+           topik: str | None = None) -> list[dict]:
+    """Mencari top-k potongan dokumen paling mirip dengan vektor kueri.
+
+    with_vectors=True ikut mengembalikan vektor tiap potongan (kunci "vector"),
+    dipakai untuk memilih potongan yang beragam (MMR) di engine.
+    topik: bila diisi, pencarian dibatasi pada satu topik (subfolder).
+    """
+    saring = None
+    if topik:
+        saring = models.Filter(must=[
+            models.FieldCondition(key="topik", match=models.MatchValue(value=topik))
+        ])
     hits = get_client().query_points(
         collection_name=config.QDRANT_COLLECTION,
         query=vector,
         limit=top_k,
         with_payload=True,
+        with_vectors=with_vectors,
+        query_filter=saring,
     ).points
 
-    return [
-        {
+    hasil = []
+    for hit in hits:
+        item = {
             "text": hit.payload.get("text", ""),
             "source": hit.payload.get("source", "-"),
             "page": hit.payload.get("page"),
             "score": hit.score,
         }
-        for hit in hits
-    ]
+        if with_vectors:
+            item["vector"] = hit.vector
+        hasil.append(item)
+    return hasil
 
