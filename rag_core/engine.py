@@ -50,8 +50,6 @@ SYSTEM_PROMPT = (
 # atau tidaknya konteks hasil retrieval.
 SYSTEM_PROMPT_TANPA_RAG = (
     ""
-    + RANAH
-    + FORMAT_JAWABAN
 )
 
 # --- Percakapan berkelanjutan ---------------------------------------------
