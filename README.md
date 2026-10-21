@@ -146,10 +146,22 @@ Vercel hanya menjalankan `app.py`. Folder `data_source/`, `scripts/`, dan
 Susun `data_source/testset.json` (contoh: `data_source/testset.example.json`)
 berisi 50–100 pasang pertanyaan dan jawaban rujukan, lalu:
 
+Isi dulu `JUDGE_MODEL`, `JUDGE_BASE_URL`, dan `JUDGE_API_KEY` di `.env` dengan model
+yang berbeda dari model yang diuji. `evaluate.py` berhenti bila penilainya sama.
+
 ```bash
+python scripts/evaluate.py --mode rag --out coba_rag.csv --batas 3   # uji coba 3 soal
 python scripts/evaluate.py --mode rag --out hasil_rag.csv   # LLM + RAG
 python scripts/evaluate.py --mode llm --out hasil_llm.csv   # LLM saja
+python scripts/rekap_hasil.py --rag hasil_rag.csv --llm hasil_llm.csv   # tabel BAB IV
 ```
+
+`rekap_hasil.py` menghitung rata-rata, simpangan baku, minimum, dan maksimum setiap
+metrik, uji Wilcoxon berpasangan pada answer relevancy dan factual correctness,
+waktu respons, serta rata-rata per jenis pertanyaan, lalu menyimpannya ke
+`rekap_hasil.md`. Skor kosong (NaN) tidak dihitung sebagai nol dan didaftar di akhir.
+Opsi `--jeda` (default 2 detik) dan `--workers` (default 4) pada `evaluate.py` dapat
+diatur bila sering terkena batas kuota API.
 
 | Metrik | `--mode rag` | `--mode llm` |
 |---|---|---|

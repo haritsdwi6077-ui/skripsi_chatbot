@@ -1,10 +1,11 @@
 -r requirements.txt
 python-dotenv>=1.0
 pypdf>=5.0
-ragas>=0.2
+ragas>=0.2,<0.5
 # RAGAS masih memakai langchain_community.chat_models.vertexai, yang dihapus di 0.4.2
 langchain-community>=0.4,<0.4.2
 langchain-openai>=0.2
 pandas>=2.2
 pymupdf>=1.24      # pembaca PDF cepat (opsional)
 cryptography>=42   # untuk PDF terenkripsi AES bila memakai pypdf
+scipy>=1.11         # uji Wilcoxon pada scripts/rekap_hasil.py
