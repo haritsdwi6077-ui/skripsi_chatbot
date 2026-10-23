@@ -1,68 +1,61 @@
 # Rekap hasil evaluasi
 
-Berkas: hasil_rag.csv, hasil_llm.csv
+Berkas: hasil\glm_rag_v2.csv, hasil\glm_llm.csv
 
-Jumlah pertanyaan: mode RAG = 2, mode tanpa RAG = 2
+Jumlah pertanyaan: mode RAG = 40, mode tanpa RAG = 40
 
 ### Tabel 4.18 Hasil evaluasi RAGAS mode LLM dengan RAG
 
 | Metrik | n | Rata-rata | Simpangan baku | Minimum | Maksimum |
 |---|---|---|---|---|---|
-| Context precision | 1 | 1,0000 | - | 1,0000 | 1,0000 |
-| Context recall | 1 | 1,0000 | - | 1,0000 | 1,0000 |
-| Faithfulness | 1 | 0,7500 | - | 0,7500 | 0,7500 |
-| Answer relevancy | 0 | - | - | - | - |
-| Factual correctness | 2 | 0,1000 | 0,1414 | 0,0000 | 0,2000 |
+| Context precision | 40 | 0,7209 | 0,3134 | 0,0000 | 1,0000 |
+| Context recall | 40 | 0,7729 | 0,4039 | 0,0000 | 1,0000 |
+| Faithfulness | 40 | 0,8678 | 0,2197 | 0,1250 | 1,0000 |
+| Answer relevancy | 40 | 0,8363 | 0,0679 | 0,6688 | 0,9526 |
+| Factual correctness | 40 | 0,4650 | 0,2651 | 0,0000 | 0,9200 |
 
 
 ### Tabel 4.19 Hasil evaluasi RAGAS mode LLM tanpa RAG
 
 | Metrik | n | Rata-rata | Simpangan baku | Minimum | Maksimum |
 |---|---|---|---|---|---|
-| Answer relevancy | 0 | - | - | - | - |
-| Factual correctness | 1 | 0,0000 | - | 0,0000 | 0,0000 |
+| Answer relevancy | 40 | 0,7971 | 0,2032 | 0,0000 | 1,0000 |
+| Factual correctness | 40 | 0,2290 | 0,3255 | 0,0000 | 0,9600 |
 
 
 ### Tabel 4.20 Perbandingan skor dan hasil uji Wilcoxon
 
 | Metrik | n pasangan | Dengan RAG | Tanpa RAG | Selisih | Statistik T | Nilai p | Keputusan | RAG lebih tinggi/lebih rendah/sama |
 |---|---|---|---|---|---|---|---|---|
-| Answer relevancy | 0 | - | - | - | - | - | tidak dapat diuji | 0/0/0 |
-| Factual correctness | 1 | 0,0000 | 0,0000 | 0,0000 | - | - | tidak dapat diuji | 0/0/1 |
+| Answer relevancy | 40 | 0,8363 | 0,7971 | 0,0392 | 334,0 | 0,3138 | H0 diterima | 22/18/0 |
+| Factual correctness | 40 | 0,4650 | 0,2290 | 0,2360 | 97,0 | 0,0001 | H0 ditolak | 31/7/2 |
 
 
 ### Tabel 4.22 Waktu respons kedua mode (detik)
 
 | Mode | Tahap | Rata-rata | Median | Persentil ke-95 | Maksimum |
 |---|---|---|---|---|---|
-| LLM dengan RAG | Retrieval | 1,931 | 1,931 | 2,766 | 2,859 |
-| LLM dengan RAG | Pembangkitan | 2,257 | 2,257 | 2,361 | 2,372 |
-| LLM dengan RAG | Total | 4,189 | 4,189 | 5,128 | 5,232 |
-| LLM tanpa RAG | Pembangkitan | 4,184 | 4,184 | 5,548 | 5,700 |
-| LLM tanpa RAG | Total | 4,185 | 4,185 | 5,549 | 5,701 |
+| LLM dengan RAG | Retrieval | 4,174 | 2,917 | 8,753 | 16,826 |
+| LLM dengan RAG | Pembangkitan | 2,152 | 1,953 | 3,635 | 5,170 |
+| LLM dengan RAG | Total | 6,328 | 5,207 | 10,987 | 18,505 |
+| LLM tanpa RAG | Pembangkitan | 3,506 | 3,265 | 6,245 | 7,033 |
+| LLM tanpa RAG | Total | 3,507 | 3,266 | 6,246 | 7,034 |
 
 
 ### Rata-rata pemakaian token per pertanyaan
 
 | Mode | Token masukan | Token keluaran | Token penalaran |
 |---|---|---|---|
-| LLM dengan RAG | 1802 | 583 | 379 |
-| LLM tanpa RAG | 90 | 1606 | 80 |
+| LLM dengan RAG | 2666 | 432 | 257 |
+| LLM tanpa RAG | 92 | 1355 | 162 |
 
 
 ### Tabel 4.21 Rata-rata skor per jenis pertanyaan
 
 | Jenis | n | CP | CR | F | AR (RAG) | FC (RAG) | AR (tanpa RAG) | FC (tanpa RAG) |
 |---|---|---|---|---|---|---|---|---|
-| daftar | 0 | - | - | - | - | - | - | - |
-| gejala | 1 | 1,0000 | - | 0,7500 | - | 0,0000 | - | 0,0000 |
-| pengendalian | 1 | - | 1,0000 | - | - | 0,2000 | - | - |
-| penyebab | 0 | - | - | - | - | - | - | - |
+| daftar | 6 | 0,5681 | 0,6667 | 0,6389 | 0,8939 | 0,5350 | 0,8867 | 0,3433 |
+| gejala | 12 | 0,8628 | 0,8333 | 0,9907 | 0,8291 | 0,5100 | 0,8476 | 0,3033 |
+| pengendalian | 12 | 0,5495 | 0,6181 | 0,8324 | 0,7994 | 0,3842 | 0,6517 | 0,1125 |
+| penyebab | 10 | 0,8481 | 0,9500 | 0,9000 | 0,8548 | 0,4660 | 0,8573 | 0,2110 |
 
-
-### Skor kosong (perlu dijalankan ulang atau dicatat sebagai keterbatasan)
-
-- [rag] Apa gejala awal penyakit blas pada daun padi?: Context recall, Answer relevancy
-- [rag] Bagaimana cara mengendalikan wereng batang cokelat?: Context precision, Faithfulness, Answer relevancy
-- [llm] Apa gejala awal penyakit blas pada daun padi?: Answer relevancy
-- [llm] Bagaimana cara mengendalikan wereng batang cokelat?: Answer relevancy, Factual correctness

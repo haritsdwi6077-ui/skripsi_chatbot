@@ -1,0 +1,41 @@
+user_input,model,mode,retrieval_s,generation_s,total_s,prompt_tokens,completion_tokens,reasoning_tokens
+Apa gejala awal penyakit blas pada daun padi?,openai/gpt-oss-120b,rag,4.164,1.933,6.098,2609,484,376
+Bagaimana gejala blas leher atau busuk leher pada malai padi?,openai/gpt-oss-120b,rag,1.9,2.07,3.971,2673,467,304
+Seperti apa gejala serangan wereng batang cokelat pada tanaman padi?,openai/gpt-oss-120b,rag,1.761,1.907,3.669,2203,464,323
+Apa yang dimaksud dengan sundep dan beluk pada serangan penggerek batang padi?,openai/gpt-oss-120b,rag,2.549,1.498,4.048,2342,360,219
+Apa gejala penyakit tungro pada tanaman padi?,openai/gpt-oss-120b,rag,2.594,1.476,4.071,2732,286,66
+Bagaimana gejala awal penyakit hawar daun bakteri atau kresek?,openai/gpt-oss-120b,rag,2.052,2.238,4.292,2106,567,366
+Seperti apa bercak pada daun yang terserang penyakit bercak cokelat?,openai/gpt-oss-120b,rag,2.485,2.197,4.685,2539,614,457
+Apa gejala penyakit hawar pelepah pada padi?,openai/gpt-oss-120b,rag,4.571,2.497,7.07,2726,697,509
+Bagaimana gejala serangan walang sangit pada padi?,openai/gpt-oss-120b,rag,2.976,1.472,4.45,2725,337,239
+Bagaimana tanda serangan keong mas pada sawah?,openai/gpt-oss-120b,rag,2.132,2.55,4.683,2599,492,314
+Bagaimana cara mengenali serangan tikus di sawah?,openai/gpt-oss-120b,rag,16.826,1.678,18.505,2058,385,147
+Apa gejala penyakit kerdil rumput pada padi?,openai/gpt-oss-120b,rag,2.246,2.753,5.0,2618,778,487
+Apa penyebab penyakit blas pada padi?,openai/gpt-oss-120b,rag,2.677,1.507,4.185,2690,290,167
+Apa penyebab penyakit tungro?,openai/gpt-oss-120b,rag,9.992,1.205,11.199,2699,225,138
+Apa penyebab penyakit hawar daun bakteri pada padi?,openai/gpt-oss-120b,rag,3.502,1.441,4.944,2416,217,149
+Jamur apa yang menyebabkan penyakit bercak cokelat pada padi?,openai/gpt-oss-120b,rag,1.996,1.409,3.407,2445,237,185
+Apa penyebab penyakit hawar pelepah daun padi?,openai/gpt-oss-120b,rag,2.822,1.416,4.239,2632,161,94
+Apa penyebab penyakit bakanae pada padi?,openai/gpt-oss-120b,rag,4.06,1.353,5.414,2690,161,60
+Serangga apa yang menularkan virus kerdil rumput dan kerdil hampa?,openai/gpt-oss-120b,rag,1.877,1.718,3.596,2744,366,235
+Mengapa wereng batang cokelat bisa berubah dari hama sekunder menjadi hama utama?,openai/gpt-oss-120b,rag,2.944,1.397,4.342,2849,312,211
+Apa nama ilmiah penggerek batang padi kuning?,openai/gpt-oss-120b,rag,2.842,1.085,3.928,2354,150,116
+Apa penyebab penyakit kerdil hampa?,openai/gpt-oss-120b,rag,1.775,2.229,4.006,2685,247,134
+Bagaimana cara mengendalikan wereng batang cokelat?,openai/gpt-oss-120b,rag,3.5,2.631,6.132,2535,715,346
+Kapan insektisida kimia boleh digunakan untuk mengendalikan wereng batang cokelat?,openai/gpt-oss-120b,rag,5.541,1.973,7.515,2347,463,333
+Bagaimana cara mengendalikan penyakit blas?,openai/gpt-oss-120b,rag,2.689,5.17,7.861,2323,318,88
+Bagaimana cara mengendalikan penggerek batang padi di daerah endemis?,openai/gpt-oss-120b,rag,3.056,4.156,7.213,2578,520,302
+Berapa ambang serangan sundep dan beluk untuk mulai mengendalikan penggerek batang?,openai/gpt-oss-120b,rag,4.839,2.373,7.212,2346,674,468
+Bagaimana cara mengendalikan penyakit tungro?,openai/gpt-oss-120b,rag,2.603,1.755,4.359,2508,376,73
+Bagaimana cara mengendalikan hawar daun bakteri?,openai/gpt-oss-120b,rag,1.842,1.914,3.757,2808,518,269
+Bagaimana cara mengendalikan keong mas di sawah?,openai/gpt-oss-120b,rag,2.409,1.524,3.934,2469,389,132
+Bagaimana cara mengendalikan hama tikus sawah?,openai/gpt-oss-120b,rag,2.597,3.608,6.205,2671,666,263
+Bagaimana cara mengendalikan walang sangit?,openai/gpt-oss-120b,rag,3.293,2.231,5.526,2277,511,165
+Bagaimana mengendalikan hama putih palsu atau pelipat daun?,openai/gpt-oss-120b,rag,3.275,3.561,6.837,2502,548,271
+Bagaimana cara mengendalikan penyakit hawar pelepah?,openai/gpt-oss-120b,rag,2.891,2.889,5.78,2257,564,377
+Apa saja empat prinsip Pengelolaan Hama Terpadu (PHT)?,openai/gpt-oss-120b,rag,7.464,2.362,9.827,3139,347,279
+Sebutkan hama bukan serangga yang menyerang tanaman padi.,openai/gpt-oss-120b,rag,8.134,1.711,9.846,3573,320,260
+Apa saja penyakit padi yang disebabkan oleh virus?,openai/gpt-oss-120b,rag,8.602,2.372,10.976,3719,360,190
+Apa saja penyakit padi yang disebabkan oleh jamur?,openai/gpt-oss-120b,rag,7.123,3.112,10.236,3651,801,592
+Apa saja hama dan penyakit padi dengan serangan terluas di Indonesia dalam sepuluh tahun terakhir?,openai/gpt-oss-120b,rag,8.688,1.569,10.257,3197,303,172
+Sebutkan jenis-jenis penggerek batang padi yang ada di Indonesia.,openai/gpt-oss-120b,rag,7.678,2.148,9.827,3623,584,415
