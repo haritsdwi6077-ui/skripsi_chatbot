@@ -6,29 +6,37 @@ Jumlah pertanyaan: mode RAG = 40, mode tanpa RAG = 40
 
 ### Tabel 4.18 Hasil evaluasi RAGAS mode LLM dengan RAG
 
-| Metrik | n | Rata-rata | Simpangan baku | Minimum | Maksimum |
-|---|---|---|---|---|---|
-| Context precision | 40 | 0,7209 | 0,3134 | 0,0000 | 1,0000 |
-| Context recall | 40 | 0,7729 | 0,4039 | 0,0000 | 1,0000 |
-| Faithfulness | 40 | 0,8678 | 0,2197 | 0,1250 | 1,0000 |
-| Answer relevancy | 40 | 0,8363 | 0,0679 | 0,6688 | 0,9526 |
-| Factual correctness | 40 | 0,4650 | 0,2651 | 0,0000 | 0,9200 |
+| Metrik | n | Rata-rata | Median | Simpangan baku | Minimum | Maksimum | Jumlah skor 0 |
+|---|---|---|---|---|---|---|---|
+| Context precision | 40 | 0,7209 | 0,8194 | 0,3134 | 0,0000 | 1,0000 | 3 |
+| Context recall | 40 | 0,7729 | 1,0000 | 0,4039 | 0,0000 | 1,0000 | 8 |
+| Faithfulness | 40 | 0,8678 | 1,0000 | 0,2197 | 0,1250 | 1,0000 | 0 |
+| Answer relevancy | 40 | 0,8363 | 0,8423 | 0,0679 | 0,6688 | 0,9526 | 0 |
+| Factual correctness | 40 | 0,4650 | 0,5000 | 0,2651 | 0,0000 | 0,9200 | 4 |
 
 
 ### Tabel 4.19 Hasil evaluasi RAGAS mode LLM tanpa RAG
 
-| Metrik | n | Rata-rata | Simpangan baku | Minimum | Maksimum |
-|---|---|---|---|---|---|
-| Answer relevancy | 40 | 0,7971 | 0,2032 | 0,0000 | 1,0000 |
-| Factual correctness | 40 | 0,2290 | 0,3255 | 0,0000 | 0,9600 |
+| Metrik | n | Rata-rata | Median | Simpangan baku | Minimum | Maksimum | Jumlah skor 0 |
+|---|---|---|---|---|---|---|---|
+| Answer relevancy | 40 | 0,7971 | 0,8332 | 0,2032 | 0,0000 | 1,0000 | 2 |
+| Factual correctness | 40 | 0,2290 | 0,0650 | 0,3255 | 0,0000 | 0,9600 | 17 |
 
 
 ### Tabel 4.20 Perbandingan skor dan hasil uji Wilcoxon
 
-| Metrik | n pasangan | Dengan RAG | Tanpa RAG | Selisih | Statistik T | Nilai p | Keputusan | RAG lebih tinggi/lebih rendah/sama |
-|---|---|---|---|---|---|---|---|---|
-| Answer relevancy | 40 | 0,8363 | 0,7971 | 0,0392 | 334,0 | 0,3138 | H0 diterima | 22/18/0 |
-| Factual correctness | 40 | 0,4650 | 0,2290 | 0,2360 | 97,0 | 0,0001 | H0 ditolak | 31/7/2 |
+| Metrik | n pasangan | Dengan RAG | Tanpa RAG | Selisih | Statistik T | Nilai p | Ukuran efek r | Kategori efek | Keputusan | RAG lebih tinggi/lebih rendah/sama |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Answer relevancy | 40 | 0,8363 | 0,7971 | 0,0392 | 334,0 | 0,3138 | 0,159 | kecil | H0 diterima | 22/18/0 |
+| Factual correctness | 40 | 0,4650 | 0,2290 | 0,2360 | 97,0 | 0,0001 | 0,643 | besar | H0 ditolak | 31/7/2 |
+
+
+### Uji sensitivitas: 12 soal dikeluarkan (no. 1, 5, 6, 7, 11, 13, 21, 28, 31, 34, 37, 40), 28 soal tersisa
+
+| Metrik | n pasangan | Dengan RAG | Tanpa RAG | Selisih | Statistik T | Nilai p | Ukuran efek r | Kategori efek | Keputusan | RAG lebih tinggi/lebih rendah/sama |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Answer relevancy | 28 | 0,8323 | 0,7753 | 0,0570 | 150,0 | 0,2359 | 0,224 | kecil | H0 diterima | 17/11/0 |
+| Factual correctness | 28 | 0,5054 | 0,3250 | 0,1804 | 75,0 | 0,0036 | 0,551 | besar | H0 ditolak | 22/6/0 |
 
 
 ### Tabel 4.22 Waktu respons kedua mode (detik)

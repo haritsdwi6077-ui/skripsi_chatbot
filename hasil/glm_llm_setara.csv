@@ -1,0 +1,291 @@
+user_input,response,reference,answer_relevancy,factual_correctness(mode=f1),model,mode,prompt_llm,retrieval_s,generation_s,total_s,prompt_tokens,completion_tokens,reasoning_tokens
+Apa gejala awal penyakit blas pada daun padi?,"### Gejala Awal Penyakit Blas pada Daun Padi  
+
+Gejala pertama biasanya muncul pada daun muda dan terlihat sebagai bercak kecil berwarna kehitaman atau coklat muda.  
+
+- Bercak bulat atau oval, berdiameter 1‑3 mm, berwarna kehitaman dan mengering menjadi kering keriput.  
+- Bercak dapat menyebar dan menyatu membentuk lesi yang lebih besar, mengakibatkan daun menguning dan mengering.  
+- Pada tahap lanjut, jaringan daun menjadi kering dan rapuh, mengurangi luas daun yang dapat melakukan fotosintesis.","Gejala awal blas daun berupa bercak kecil berwarna cokelat keputihan. Bercak berkembang menjadi bentuk belah ketupat atau elips yang meruncing di kedua ujungnya, dengan bagian tengah kelabu atau keputihan dan tepi cokelat atau merah kecokelatan, berukuran sampai 1–1,5 cm × 0,3–0,5 cm.",0.9264034226112771,0.0,openai/gpt-oss-120b,llm,setara,0.0,1.939,1.94,251,262,123
+Bagaimana gejala blas leher atau busuk leher pada malai padi?,"### Gejala blas leher pada malai padi  
+
+Gejala utama muncul pada bagian leher batang tempat malai menempel. Lesi berwarna keputihan atau keabu-abuan, lembap pada awalnya, kemudian mengering menjadi bercak coklat keras yang dapat meluas hingga merusak seluruh leher dan menyebabkan malai mudah lepas.
+
+- Lesi berbentuk bintik atau pita memanjang pada leher batang  
+- Permukaan lesi berwarna keputihan/keabu-abuan, berair pada tahap awal  
+- Lesi mengering menjadi bercak coklat keras, mengakibatkan leher rapuh dan malai mudah jatuh.",Pada leher malai muncul warna cokelat keabuan hingga hitam di pangkal leher malai. Infeksi ini membuat leher malai mudah patah sehingga pengisian malai terganggu dan gabah menjadi hampa.,0.8064214137164423,0.82,openai/gpt-oss-120b,llm,setara,0.0,2.214,2.215,258,296,148
+Seperti apa gejala serangan wereng batang cokelat pada tanaman padi?,"### Gejala Wereng Batang Cokelat pada Padi  
+
+Serangan wereng batang cokelat biasanya terlihat pada batang dan daun tanaman padi yang mulai menguning dan mengering.  
+
+- Batang menjadi pucat, menguning, dan mengeras, kemudian muncul bercak cokelat atau kehitaman pada permukaan batang.  
+- Daun menguning secara menyeluruh, mengering dari ujung ke pangkal, dan dapat melengkung ke atas (leaf rolling).  
+- Tanaman menjadi kerdil, pertumbuhan terhambat, dan pada fase akhir dapat mati total.  ","Wereng batang cokelat menghisap cairan pada pembuluh tanaman. Daun mula-mula menguning lalu cepat mengering, kemudian muncul titik-titik pada hamparan yang membentuk pola melingkar yang disebut hopperburn sehingga tanaman tampak seperti terbakar.",0.7690059038629989,0.0,openai/gpt-oss-120b,llm,setara,0.0,1.218,1.219,258,203,68
+Apa yang dimaksud dengan sundep dan beluk pada serangan penggerek batang padi?,"Sundep dan beluk adalah gejala kerusakan pada batang padi yang disebabkan oleh serangan penggerek batang (stem borer). Kedua istilah tersebut menggambarkan bentuk luka atau bekas masuknya larva ke dalam jaringan batang.
+
+- **Sundep**: bekas lubang kecil yang terbuka pada permukaan batang, biasanya muncul di bagian bawah batang dekat pangkal tanaman.  
+- **Beluk**: bekas luka yang lebih besar dan menggelembung, terbentuk setelah larva menggerogoti jaringan dalam batang sehingga menyebabkan batang menjadi rapuh dan mudah patah.","Sundep adalah gejala serangan penggerek batang pada fase vegetatif, sedangkan beluk atau malai hampa adalah gejala serangan pada fase generatif. Serangan larva terlihat dari bekas gerekan di batang yang merusak sistem pembuluh tanaman.",0.8762011100110673,0.44,openai/gpt-oss-120b,llm,setara,0.0,1.157,1.158,260,218,83
+Apa gejala penyakit tungro pada tanaman padi?,"### Gejala Tungro pada Tanaman Padi  
+
+Penyakit tungro menyebabkan pertumbuhan padi menjadi kerdil dan daun menguning pucat. Tanaman juga menunjukkan daun melengkung, ujung daun menguning, serta penurunan hasil panen yang signifikan.  
+
+- Daun menguning pucat, terutama pada bagian ujung  
+- Tanaman kerdil, pertumbuhan terhambat  
+- Daun melengkung atau melipat ke atas  
+- Penurunan jumlah dan ukuran bulir padi  ","Tanaman menjadi kerdil dan daun berubah warna menjadi oranye atau kuning terang sampai kuning kecokelatan, dimulai dari daun bagian bawah. Jumlah anakan dan bulir berkurang, dan pemendekan buku-buku batang membuat pertumbuhan daun seperti kipas.",0.9266630303259612,0.44,openai/gpt-oss-120b,llm,setara,0.0,1.123,1.124,251,226,107
+Bagaimana gejala awal penyakit hawar daun bakteri atau kresek?,"### Gejala Awal
+
+Penyakit hawar daun bakteri (kresek) pada padi biasanya muncul pada daun muda atau pucuk tanaman.
+
+- Bintik berair berwarna kuning keputihan pada ujung daun, menyerupai tetesan air.
+- Daun menguning dan mengering secara bertahap, dimulai dari ujung ke arah pangkal.
+- Pada bagian yang terinfeksi muncul lesi memanjang berwarna coklat kehitaman.","Gejala awal berupa warna kuning atau kemerahan pada tepi daun yang kemudian berubah menjadi abu-abu dengan bentuk tidak beraturan, lalu meluas dan mengering. Pada bercak muda terdapat tetesan cairan bakteri (bakteriooze) yang terlihat jelas pada pagi hari.",0.7814030068433492,0.55,openai/gpt-oss-120b,llm,setara,0.0,1.601,1.602,255,246,138
+Seperti apa bercak pada daun yang terserang penyakit bercak cokelat?,"### Ciri‑ciri Bercak Cokelat pada Daun Padi  
+
+Bercak cokelat biasanya muncul sebagai lesi berwarna coklat kehitaman pada daun muda hingga daun tua. Lesinya berbentuk bulat atau tidak beraturan, tepinya agak kabur, dan dapat menyebar menjadi area yang lebih luas bila tidak dikendalikan.  
+
+- Warna: coklat tua hingga hitam, kadang mengkilap.  
+- Bentuk: bulat, oval, atau tidak beraturan, dengan tepi yang tidak jelas.  
+- Ukuran: mulai dari beberapa milimeter hingga beberapa sentimeter, tergantung tingkat serangan.  
+- Distribusi: muncul berkelompok atau menyebar merata di seluruh permukaan daun.  ","Bercak khas pada daun berbentuk oval dan tersebar di seluruh permukaan daun. Gejala awal berupa bintik cokelat gelap atau cokelat keabu-abuan berdiameter 0,05–0,1 cm, dan bercak yang berkembang sempurna berukuran sekitar 0,4–1 × 0,1–0,2 cm.",0.7432720467983872,0.0,openai/gpt-oss-120b,llm,setara,0.0,1.546,1.547,258,321,151
+Apa gejala penyakit hawar pelepah pada padi?,"### Gejala Hawar Pelepah pada Padi  
+
+Gejala awal muncul pada daun muda yang menguning dan mengering, kemudian menyebar ke daun yang lebih tua. Daun menjadi kaku, ujungnya mengkerut, dan muncul bercak putih keabu-abuan yang berubah menjadi coklat kehitaman.
+
+- Daun menguning dan mengering secara bertahap  
+- Bercak putih keabu-abuan pada permukaan daun, kemudian menjadi coklat kehitaman  
+- Ujung daun mengkerut, kaku, dan mudah lepas dari batang  
+
+Jika gejala ini terlihat, segeralah lakukan tindakan pengendalian untuk mencegah penyebaran.","Gejala biasanya muncul saat fase anakan maksimum berupa bercak abu-abu kehijauan berbentuk elips atau oval pada pelepah daun dengan tepi tidak teratur, berukuran sekitar 1 cm dan memanjang 2–3 cm, lalu bercak-bercak menyatu. Pada kelembapan tinggi tumbuh miselium dan sklerotium cokelat tua sampai kehitaman.",0.8630088915212681,0.0,openai/gpt-oss-120b,llm,setara,0.0,1.14,1.141,253,243,92
+Bagaimana gejala serangan walang sangit pada padi?,"### Gejala walang sangit pada padi  
+
+Walang sangit (Rhopalosiphum maidis) menyerang pucuk dan daun muda, menyebabkan pertumbuhan terhambat dan daun menguning.  
+
+- Daun muda menguning, mengering, dan menjadi kaku  
+- Pucuk pertumbuhan terhenti atau mati, sehingga tanaman menjadi pendek  
+- Terdapat koloni serangga kecil berwarna hijau kehitaman di bagian bawah daun dan batang muda.","Walang sangit menghisap malai padi pada periode bulir mulai berisi sampai matang susu, sehingga bulir berubah warna, mengapur, hampa, atau tidak terisi sempurna dan kualitas beras menjadi buruk.",0.9143393559840355,0.0,openai/gpt-oss-120b,llm,setara,0.0,0.919,0.92,253,197,88
+Bagaimana tanda serangan keong mas pada sawah?,"### Tanda Serangan Keong Mas  
+
+Keong mas biasanya muncul pada malam hari dan menggerogoti daun serta batang padi muda, sehingga pertumbuhan tanaman menjadi terhambat. Anda dapat melihat bekas lendir putih mengkilap di permukaan tanaman serta lubang kecil pada daun yang disebabkan oleh gigitan keong.
+
+- Daun berwarna kuning pucat atau menguning di tepi, sering terdapat lubang melengkung.  
+- Batang dan pucuk tanaman menjadi tipis, berair, dan mudah patah.  
+- Lendir putih mengkilap menempel pada daun, batang, atau tanah di sekitar tanaman.  ","Keong mas merusak padi muda umur 7–10 hari, terutama bibit yang baru dipindah tanam, dengan cara memarut dan memakan jaringan tanaman. Akibatnya ada bibit yang hilang, daun tampak kuning atau kering, dan potongan daun serta batang terlihat mengambang.",0.8346165627377108,0.33,openai/gpt-oss-120b,llm,setara,0.0,1.198,1.199,252,255,112
+Bagaimana cara mengenali serangan tikus di sawah?,"### Tanda‑tanda serangan tikus di sawah  
+
+Serangan tikus biasanya terlihat dari kerusakan pada bibit dan tanah serta jejak aktivitas mereka. Perhatikan gejala berikut untuk memastikan adanya tikus.
+
+- Bibit atau pucuk padi yang dipotong pendek, biasanya dipotong bersih seperti dipotong gunting.  
+- Lubang‑lubang kecil pada akar atau batang yang tampak digigit.  
+- Kotoran berwarna gelap (kotoran tikus) yang bertebaran di sekitar tanaman.  
+- Jejak jelek atau jejak kaki tikus di tanah basah, terutama di pinggir sawah.  
+- Kerusakan pada wadah atau perangkap bibit, seperti lubang pada kantong plastik atau jaring.  ","Kehadiran tikus dapat dideteksi dari jejak kaki, jalur jalan, kotoran, lubang aktif, dan gejala serangan. Tikus merusak padi mulai dari tengah petak lalu meluas ke pinggir, dan pada serangan berat hanya menyisakan 1–2 baris padi di pinggir petakan.",0.8483142765008068,0.46,openai/gpt-oss-120b,llm,setara,0.0,1.812,1.813,253,286,111
+Apa gejala penyakit kerdil rumput pada padi?,"### Gejala Penyakit Kerdil Rumput pada Padi  
+
+Padi yang terinfeksi penyakit kerdil rumput biasanya menunjukkan pertumbuhan yang terhambat dan daun yang tidak normal.  
+
+- Tanaman menjadi pendek (kerdil) dengan batang tipis dan lemah.  
+- Daun menguning, mengering di ujung, dan pertumbuhan tunas samping berkurang.  
+- Hasil panen menurun drastis karena berkurangnya jumlah batang dan bulir.  ","Tanaman yang terinfeksi berat tampak seperti rumput dengan anakan banyak, berbentuk seperti kipas, dan kerdil. Daun memendek, menyempit, kaku, berwarna hijau kekuningan, dan dipenuhi bercak seperti karat.",0.8917356368556296,0.2,openai/gpt-oss-120b,llm,setara,0.0,1.077,1.078,253,224,111
+Apa penyebab penyakit blas pada padi?,"### Penyebab Penyakit Blas pada Padi  
+
+Penyakit blas disebabkan oleh jamur **Magnaporthe oryzae** (sebelumnya *Pyricularia oryzae*).  
+
+- Kelembaban udara tinggi dan daun basah lama  
+- Suhu 25‑30 °C  
+- Pemupukan nitrogen berlebih dan penanaman rapat  
+
+Faktor‑faktor tersebut memudahkan spora jamur menyebar dan menginfeksi tanaman.",Penyakit blas disebabkan oleh jamur Pyricularia oryzae Cav.,0.8989548275072679,0.0,openai/gpt-oss-120b,llm,setara,0.0,2.484,2.485,249,274,161
+Apa penyebab penyakit tungro?,"### Penyebab Penyakit Tungro  
+
+Penyakit tungro pada padi disebabkan oleh infeksi virus yang ditularkan oleh serangga vektor.  
+
+- Virus utama: **Rice tungro bacilliform virus (RTBV)** dan **Rice tungro spherical virus (RTSV)**.  
+- Vektor: **Nephotettix virescens** (serangga hijau leafhopper) yang menyebarkan virus saat mengisap cairan tanaman.  ","Tungro disebabkan oleh dua virus, yaitu Rice Tungro Bacilliform Virus (RTBV) dan Rice Tungro Spherical Virus (RTSV), yang ditularkan oleh wereng hijau Nephotettix virescens dan N. nigropictus.",0.831978018637002,0.89,openai/gpt-oss-120b,llm,setara,0.0,2.111,2.112,247,268,160
+Apa penyebab penyakit hawar daun bakteri pada padi?,"Penyakit hawar daun bakteri pada padi disebabkan oleh bakteri **Xanthomonas oryzae pv. oryzae**. Bakteri ini masuk ke tanaman melalui luka pada daun atau batang dan menyebar cepat di lahan yang lembab.
+
+- Benih atau bibit terkontaminasi  
+- Air irigasi, hujan, atau percikan air yang membawa bakteri  
+- Alat pertanian, tenaga kerja, atau serangga yang menyentuh tanaman yang terinfeksi  ","Hawar daun bakteri (kresek) disebabkan oleh bakteri Xanthomonas campestris pv. oryzae, bakteri berbentuk batang, gram negatif, dan tidak membentuk spora. Penyakit ini juga terbawa benih.",0.8030231249722469,0.33,openai/gpt-oss-120b,llm,setara,0.0,1.033,1.034,253,236,117
+Jamur apa yang menyebabkan penyakit bercak cokelat pada padi?,"### Penyebab
+
+Jamur yang menyebabkan penyakit bercak cokelat pada padi adalah **Cochliobolus miyabeanus** (dulu dikenal sebagai *Helminthosporium oryzae*).  
+
+- Jamur ini menyerang daun, batang, dan bulir, menghasilkan bercak‑bercak coklat khas.","Bercak cokelat disebabkan oleh jamur Drechslera oryzae, yang menghasilkan toksin cochliobolin atau ophiobolin dan termasuk penyakit terbawa benih.",0.8337200818442366,0.4,openai/gpt-oss-120b,llm,setara,0.0,2.747,2.748,255,277,195
+Apa penyebab penyakit hawar pelepah daun padi?,"### Penyebab
+
+Penyakit hawar pelepah daun padi disebabkan oleh jamur **Rhizoctonia solani**.  
+
+- Jamur ini berkembang cepat pada kondisi lembab, suhu 25‑30 °C, dan penanaman yang terlalu rapat.  
+- Pemupukan nitrogen berlebih juga memperparah serangan penyakit.",Hawar pelepah daun disebabkan oleh jamur Rhizoctonia solani Kuhn yang tidak membentuk spora dan membentuk sklerotium berwarna cokelat sampai cokelat kehitaman.,0.8232490422556008,0.25,openai/gpt-oss-120b,llm,setara,0.0,1.171,1.173,253,331,248
+Apa penyebab penyakit bakanae pada padi?,"Penyakit bakanae pada padi disebabkan oleh jamur **Fusarium fujikuroi** yang menginfeksi biji atau bibit padi.
+
+- Jamur masuk melalui biji yang terkontaminasi atau tanah yang mengandung spora.
+- Kondisi lembab, suhu hangat (25‑30 °C), dan penanaman pada lahan basah mempercepat penyebaran jamur.",Penyakit bakanae atau hawar Fusarium disebabkan oleh jamur Fusarium moniliforme Shel (Gibberella fujikuroi Saw).,0.9525740513543036,0.17,openai/gpt-oss-120b,llm,setara,0.0,1.003,1.004,251,171,72
+Serangga apa yang menularkan virus kerdil rumput dan kerdil hampa?,"Virus kerdil rumput dan kerdil hampa pada padi ditularkan oleh kutu daun (leafhopper).  
+
+- **Kerdil rumput**: ditularkan oleh *Nephotettix cincticeps* (kutu daun hijau).  
+- **Kerdil hampa**: ditularkan oleh *Nephotettix virescens* (kutu daun kuning).  ",Virus kerdil rumput dan kerdil hampa ditularkan oleh wereng batang cokelat (Nilaparvata lugens).,0.7593521302935452,0.5,openai/gpt-oss-120b,llm,setara,0.0,1.815,1.816,261,545,449
+Mengapa wereng batang cokelat bisa berubah dari hama sekunder menjadi hama utama?,"Wereng batang cokelat biasanya dianggap hama sekunder karena serangannya ringan, namun bila kondisi tanaman atau lingkungan mendukung, populasinya dapat meningkat drastis sehingga menjadi hama utama.
+
+### Penyebab perubahan menjadi hama utama
+
+- Tanaman mengalami stres (kekurangan nutrisi, air, atau varietas yang rentan).  
+- Minimnya predator alami atau tidak ada tindakan pengendalian kimia.  
+- Siklus tanam berulang tanpa rotasi membuat populasi wereng menumpuk.  
+- Cuaca hangat dan lembab mempercepat siklus hidup dan reproduksi wereng.","Penggunaan insektisida yang tidak bijaksana secara intensif dan berskala besar membunuh banyak musuh alami, sehingga populasi wereng batang cokelat berkembang pesat dan terjadi ledakan populasi.",0.7478370538620078,0.15,openai/gpt-oss-120b,llm,setara,0.0,2.209,2.21,260,353,217
+Apa nama ilmiah penggerek batang padi kuning?,"Penggerek batang padi kuning dikenal dengan nama ilmiah **Scirpophaga incertulas**.
+
+### Nama Ilmiah
+- *Scirpophaga incertulas* (Walker, 1863)  ",Penggerek batang padi kuning adalah Scirpophaga incertulas Walker (Lepidoptera: Pyralidae).,0.8581466990479566,0.57,openai/gpt-oss-120b,llm,setara,0.0,0.895,0.896,253,200,144
+Apa penyebab penyakit kerdil hampa?,"Penyakit kerdil hampa pada padi disebabkan oleh **virus Rice dwarf virus (RDV)** yang ditularkan oleh **kutu daun (Nephotettix spp.)**.  
+
+- Virus RDV menginfeksi tanaman sehingga pertumbuhan terhambat dan bulir menjadi kosong.  
+- Kutu daun menjadi vektor utama penyebaran virus tersebut.",Penyakit kerdil hampa (ragged stunt) disebabkan oleh rice ragged stunt virus (RRSV) yang ditularkan oleh wereng batang cokelat.,0.7865934394942666,0.0,openai/gpt-oss-120b,llm,setara,0.0,1.712,1.713,250,284,198
+Bagaimana cara mengendalikan wereng batang cokelat?,"### Cara Pengendalian Wereng Batang Cokelat  
+
+Wereng batang cokelat dapat dikendalikan dengan kombinasi tindakan budaya, hayati, dan kimia. Pilih varietas tahan, jaga kebersihan sawah, dan gunakan insektisida bila ambang kerusakan terlampaui.  
+
+- Rotasi tanaman dan penanaman varietas tahan wereng.  
+- Pengelolaan gulma serta menjaga jarak tanam agar sirkulasi udara baik.  
+- Pelepasan parasitoid (mis. *Trichogramma* spp.) atau predator alami.  
+- Penyemprotan insektisida organofosfat atau piretroid sesuai dosis dan jadwal yang direkomendasikan.  ","Pengendalian dilakukan secara terpadu melalui tanam serentak, pergiliran tanaman dan varietas, penggunaan varietas tahan, pengendalian hayati dengan cendawan seperti Beauveria bassiana dan Metarhizium anisopliae bila populasi kurang dari 1 ekor per tunas, eradikasi tanaman bergejala kerdil, serta insektisida bila populasi mencapai ambang yang ditetapkan.",0.6913855909348811,0.59,openai/gpt-oss-120b,llm,setara,0.0,1.931,1.932,253,365,200
+Kapan insektisida kimia boleh digunakan untuk mengendalikan wereng batang cokelat?,"### Penggunaan Insektisida Kimia
+
+Insektisida kimia boleh dipakai untuk mengendalikan wereng batang cokelat bila ambang kerusakan tercapai dan upaya kultur serta hayati tidak cukup mengurangi populasi hama.  
+
+- Lakukan penyuluhan lapangan untuk memastikan jumlah wereng melebihi ambang ekonomi (biasanya > 5 % tanaman terinfeksi).  
+- Terapkan pada fase pertumbuhan vegetatif awal (saat tanaman berumur 20‑30 hari) agar serangan dapat ditekan sebelum panen.  
+- Pastikan rotasi pestisida dan ikuti dosis serta interval aplikasi yang tertera pada label produk.  ","Insektisida kimia boleh digunakan bila setelah pengelolaan agroekosistem populasi wereng batang cokelat masih 10 ekor per rumpun atau lebih pada tanaman berumur sampai 40 HST, atau 40 ekor per rumpun atau lebih pada tanaman berumur lebih dari 40 HST.",0.8201662106077943,0.31,openai/gpt-oss-120b,llm,setara,0.0,9.939,9.94,261,285,130
+Bagaimana cara mengendalikan penyakit blas?,"### Pengendalian Penyakit Blas pada Padi  
+
+Penyakit blas dapat dikendalikan dengan menggabungkan langkah budaya, kimia, dan penggunaan varietas tahan.  
+
+- Tanam varietas padi yang memiliki ketahanan terhadap blas.  
+- Lakukan rotasi tanaman dan bersihkan sisa tanaman yang terinfeksi.  
+- Atur pemupukan nitrogen agar tidak berlebihan, karena nitrogen tinggi memicu penyakit.  
+- Jaga jarak tanam yang cukup serta irigasi terkontrol untuk mengurangi kelembapan berlebih.  
+- Aplikasikan fungisida yang terdaftar (misalnya triazol atau strobilurin) pada fase kritis pertumbuhan, ikuti dosis dan jadwal yang dianjurkan.  ","Blas dikendalikan dengan pemupukan berimbang (di daerah endemis pupuk N tidak lebih dari 90 kg/ha, kalium cukup, abu sekam sebagai sumber silikat), penanaman dan pergiliran varietas tahan, tidak memakai benih dari daerah endemis serta perlakuan benih dengan fungisida, pengaturan waktu tanam, membakar jerami tanaman sakit, dan fungisida bila diperlukan.",0.7571656711718459,0.4,openai/gpt-oss-120b,llm,setara,0.0,2.383,2.384,249,262,95
+Bagaimana cara mengendalikan penggerek batang padi di daerah endemis?,"### Pengendalian Penggerek Batang di Daerah Endemis  
+
+Penggerek batang padi dapat dikendalikan secara terpadu dengan mengombinasikan tindakan budaya, kimia, dan hayati. Pilihlah metode yang sesuai dengan kondisi lahan dan fase pertumbuhan tanaman untuk menurunkan populasi hama secara efektif.  
+
+- Tanam varietas tahan atau kurang disukai penggerek, seperti ‘IR64’ atau ‘Ciherang’.  
+- Lakukan rotasi tanaman dan bersihkan sisa tanaman serta gulma di pinggir sawah.  
+- Terapkan penanaman rapat (dense planting) untuk mengurangi ruang gerak larva.  
+- Lakukan penyemprotan insektisida sistemik (misalnya chlorpyrifos atau carbofuran) pada fase 20‑30 hari setelah tanam, sebelum larva masuk ke dalam batang.  
+- Gunakan agen hayati seperti *Trichogramma* spp. atau *Bacillus thuringiensis* (Bt) secara berkala.  
+- Lakukan penyiangan gulma dan pengolahan lahan secara teratur untuk mengurangi tempat berkembang biak.  ","Di daerah endemis dilakukan pengaturan pola tanam (tanam serentak, pergiliran tanaman, pengelompokan persemaian, pengaturan waktu tanam sekitar 15 hari setelah puncak penerbangan ngengat), pengendalian fisik dan mekanik (penyabitan rendah lalu penggenangan, pengumpulan kelompok telur), pengendalian hayati dengan parasitoid seperti Trichogramma, dan insektisida berdasarkan hasil pengamatan.",0.8593310200412189,0.31,openai/gpt-oss-120b,llm,setara,0.0,6.895,6.896,257,407,153
+Berapa ambang serangan sundep dan beluk untuk mulai mengendalikan penggerek batang?,"Ambang serangan untuk memulai pengendalian penggerek batang pada padi biasanya ditetapkan berdasarkan persentase batang yang terinfeksi atau kepala mati. Jika persentase tersebut sudah mencapai nilai ambang, tindakan pengendalian harus segera dilakukan.
+
+- **Sundep (yellow/white stem borer)**: mulai kontrol bila ≥ 5 % batang terinfeksi atau ≥ 10 % kepala mati pada fase 30‑45 hari setelah tanam.  
+- **Beluk (stem borer lain)**: mulai kontrol bila ≥ 5 % batang berlubang atau ≥ 10 % kepala mati pada fase 60‑70 hari setelah tanam.  ","Pengendalian fase sundep pada tanaman vegetatif dilakukan bila intensitas serangan rata-rata 10–15% atau lebih, sedangkan fase beluk pada tanaman generatif bila rata-rata 10% atau lebih paling lambat tiga minggu sebelum panen.",0.760338808165835,0.0,openai/gpt-oss-120b,llm,setara,0.0,3.28,3.281,261,576,423
+Bagaimana cara mengendalikan penyakit tungro?,"### Pengendalian Penyakit Tungro  
+
+Penyakit tungro pada padi dapat dikendalikan dengan mengurangi sumber vektor dan menanam varietas yang tahan.  
+
+- Tanam varietas padi yang memiliki ketahanan terhadap tungro.  
+- Lakukan penyemprotan insektisida secara teratur untuk mengendalikan wereng hijau (vector).  
+- Bersihkan gulma dan tanaman inang lain di sekitar sawah yang dapat menjadi tempat berkembang biak wereng.  
+- Gunakan benih bersertifikat bebas tungro dan hindari penanaman kembali pada lahan yang pernah terinfeksi.  ","Tungro dikendalikan secara dini dan terpadu dengan memberantas sumber infeksi (tanaman sakit, singgang, rumput inang), mengatur waktu tanam, tanam serentak, pergiliran tanaman dengan bukan inang, penggunaan dan pergiliran varietas tahan, eradikasi, serta aplikasi insektisida terhadap wereng hijau pada daerah endemis bila populasinya mencapai 20 ekor per 25 ayunan.",0.835429338513216,0.4,openai/gpt-oss-120b,llm,setara,0.0,1.395,1.396,250,258,118
+Bagaimana cara mengendalikan hawar daun bakteri?,"Hawar daun bakteri pada padi dapat dikendalikan dengan menggabungkan langkah‑langkah budaya, penggunaan varietas tahan, dan pengendalian kimia yang tepat.
+
+### Cara Pengendalian
+- Tanam varietas padi yang memiliki ketahanan terhadap bakteri Xanthomonas oryzae pv. oryzae.  
+- Lakukan rotasi tanaman dan bersihkan sisa tanaman yang terinfeksi untuk mengurangi sumber inoculum.  
+- Terapkan irigasi terkontrol; hindari genangan air lama yang dapat menyebarkan bakteri.  
+- Gunakan pestisida berbasis tembaga atau antibiotik (misalnya streptomisin) pada fase awal serangan, sesuai dosis yang dianjurkan.  
+- Jaga kebersihan peralatan pertanian dan hindari memotong atau menyebar jaringan yang terinfeksi.","Pengendalian HDB meliputi penanaman varietas tahan, sanitasi tunggul dan jerami terinfeksi, seleksi dan perlakuan benih dengan agens hayati, memastikan kompos jerami terdekomposisi sempurna, penggunaan agens hayati Paenibacillus polymyxa pada umur 14, 28, dan 42 HST, serta pemberian pupuk N sesuai takaran.",0.7948061320082814,0.57,openai/gpt-oss-120b,llm,setara,0.0,1.192,1.193,252,328,137
+Bagaimana cara mengendalikan keong mas di sawah?,"### Pengendalian Keong Mas di Sawah  
+
+Keong mas dapat dikendalikan dengan cara kultur air yang bersih dan penggunaan musuh alami.  
+
+- **Pengeringan lahan**: Kosongkan sawah selama 2–3 hari sebelum tanam untuk mematikan keong.  
+- **Penggunaan umpan beracun**: Sebarkan umpan berbasis metaldehid atau fosforus pada malam hari, lalu siram dengan air.  
+- **Pemanfaatan predator**: Tanam tanaman air seperti eceng gondok yang menarik ikan pemangsa keong.  
+
+Lakukan rotasi sawah dan hindari genangan air lama untuk mencegah infestasi kembali.","Keong mas dikendalikan dengan memungut keong secara langsung (dibantu umpan daun talas, daun pepaya, atau bunga terompet), melepas bebek, membuat parit di tepi pematang dan memasang ajir, menggunakan pestisida nabati seperti umbi gadung dan mimba, serta moluskisida berbahan aktif niklosamida pada waktu kritis sekitar 10 hari setelah tanam pindah.",0.9249148053546271,0.0,openai/gpt-oss-120b,llm,setara,0.0,1.103,1.104,253,201,47
+Bagaimana cara mengendalikan hama tikus sawah?,"### Pengendalian Tikus Sawah  
+
+Untuk mengendalikan tikus sawah, gunakan kombinasi metode fisik, kimia, dan perbaikan lingkungan. Metode fisik seperti perangkap dapat langsung mengurangi populasi, sedangkan penggunaan umpan racun harus hati‑hati dan sesuai peraturan. Jaga kebersihan sawah serta singkirkan sumber makanan dan tempat persembunyian tikus.
+
+- Pasang perangkap atau jebakan di jalur masuk tikus, periksa dan bersihkan secara rutin.  
+- Gunakan umpan racun (rodentisida) yang terdaftar, letakkan di tempat aman jauh dari hewan ternak dan manusia.  
+- Lakukan sanitasi: singkirkan gulma, sisa padi, dan sampah organik yang dapat menjadi sumber makanan.  
+- Tanam tanaman penghalang atau gunakan mulsa untuk mengurangi tempat persembunyian tikus.  
+- Rotasi lahan dan penanaman varietas padi yang lebih tahan terhadap kerusakan akar.  ","Tikus dikendalikan dengan tanam serentak pada hamparan luas, sanitasi semak dan rerumputan, memperkecil ukuran pematang dan tanggul, kombinasi pengasapan dan perangkap bambu, serta sistem pagar perangkap dengan tanaman perangkap.",0.835619909553453,0.0,openai/gpt-oss-120b,llm,setara,0.0,2.087,2.088,253,495,267
+Bagaimana cara mengendalikan walang sangit?,"### Cara Mengendalikan Walang Sangit  
+
+Walang sangit dapat dikendalikan dengan pendekatan terpadu, menggabungkan tindakan budaya, kimia, dan hayati.  
+
+- **Pengelolaan budaya**: tanam varietas tahan, jaga jarak tanam yang cukup, dan lakukan penanaman dini atau rotasi tanaman.  
+- **Pengaturan air**: hindari kondisi lahan terlalu kering atau tergenang lama; irigasi teratur dapat menurunkan populasi hama.  
+- **Pengendalian kimia**: bila serangan berat, semprot insektisida yang terdaftar untuk walang sangit (mis. imidacloprid, karbaryl) pada fase nympha atau dewasa, sesuai dosis dan interval yang dianjurkan.  
+- **Pengendalian hayati**: manfaatkan predator alami seperti kepik dan parasit, serta tanam tanaman penarik predator di pinggir sawah.  ","Walang sangit dikendalikan dengan tanam serentak (selisih waktu tanam paling lama 2 minggu), sanitasi tanaman inang, pengendalian mekanik dengan perangkap seperti bangkai kepiting, pemanfaatan musuh alami seperti laba-laba dan cendawan Beauveria bassiana, serta insektisida bila populasi lebih dari 10 ekor/m2 saat bulir belum mengeras.",0.9511211629741214,0.29,openai/gpt-oss-120b,llm,setara,0.0,2.889,2.89,250,499,286
+Bagaimana mengendalikan hama putih palsu atau pelipat daun?,"Hama putih palsu atau pelipat daun dapat dikendalikan dengan menggabungkan langkah budaya, hayati, dan kimia secara terpadu. Pilih varietas padi yang tahan, jaga pola tanam dan irigasi, serta pantau secara rutin agar serangan tidak menyebar.
+
+### Cara Pengendalian
+- Tanam varietas tahan hama dan lakukan penanaman bergilir.
+- Jaga kelembaban sawah; hindari genangan air lama yang memicu perkembangbiakan hama.
+- Lakukan penyiangan gulma dan bersihkan sisa tanaman setelah panen.
+- Manfaatkan musuh alami seperti kepik, laba‑laba, dan parasitoid telur (Trichogramma spp.).
+- Jika ambang kerusakan terlampaui, semprot insektisida selektif (mis. imidacloprid atau thiamethoxam) sesuai dosis dan jadwal yang direkomendasikan.","Pengendalian dilakukan dengan mengeringkan air persemaian dan sawah yang terserang selama 5–7 hari, memanfaatkan musuh alami seperti parasitoid Apanteles sp. dan predator laba-laba, capung kecil, serta cocopet, dan insektisida hanya bila intensitas serangan pada daun bendera lebih dari 45%.",0.8782275806815707,0.0,openai/gpt-oss-120b,llm,setara,0.0,1.309,1.31,255,393,184
+Bagaimana cara mengendalikan penyakit hawar pelepah?,"### Cara Pengendalian Hawar Pelepah  
+
+Penyakit hawar pelepah pada padi dapat ditekan dengan kombinasi varietas tahan, perlakuan benih, dan pemupukan yang tepat.  
+
+- Tanam varietas padi yang memiliki ketahanan terhadap hawar pelepah.  
+- Lakukan perlakuan benih dengan fungisida (misalnya carbendazim atau tricyclazole) sebelum tanam.  
+- Aplikasikan fungisida daun secara berkala pada fase pertumbuhan kritis (tiller hingga booting).  
+- Jaga kelembaban lahan dengan irigasi terkontrol dan hindari genangan air lama.  
+- Beri pupuk nitrogen secukupnya, hindari pemupukan berlebih yang dapat memperparah penyakit.  
+- Bersihkan sisa tanaman dan gulma yang dapat menjadi sumber inokulum.  ","Pengendalian meliputi varietas tahan atau toleran, budi daya tanaman sehat (pemupukan berimbang, jarak tanam tidak terlalu rapat, pengaturan air), sanitasi gulma inang, pengendalian hayati dengan Trichoderma, dan fungisida sebagai alternatif terakhir.",0.6919029308553846,0.71,openai/gpt-oss-120b,llm,setara,0.0,2.312,2.313,253,409,213
+Apa saja empat prinsip Pengelolaan Hama Terpadu (PHT)?,"Pengelolaan Hama Terpadu (PHT) didasarkan pada empat prinsip utama yang membantu mengendalikan hama secara efektif dan ramah lingkungan.
+
+- **Pencegahan**: Mengurangi faktor yang memicu serangan hama melalui praktik budidaya yang baik.  
+- **Pengawasan**: Memantau populasi hama secara rutin untuk menentukan ambang kerusakan.  
+- **Pengendalian**: Menggunakan metode pengendalian yang paling selektif, mulai dari kultur, hayati, kimia, hingga mekanik, sesuai tingkat serangan.  
+- **Evaluasi**: Menilai hasil tindakan pengendalian dan menyesuaikan strategi untuk musim berikutnya.","Empat prinsip PHT adalah budi daya tanaman sehat, pemanfaatan musuh alami, pengamatan rutin, dan petani sebagai ahli PHT.",0.8571280595832875,0.27,openai/gpt-oss-120b,llm,setara,0.0,1.183,1.184,257,251,95
+Sebutkan hama bukan serangga yang menyerang tanaman padi.,"Berikut beberapa hama yang menyerang tanaman padi tetapi bukan serangga.
+
+### Hama non‑serangga pada padi
+
+- Nematoda akar (misalnya *Meloidogyne graminicola*, *Hirschmanniella oryzae*)  
+- Tungau (spider mite, misalnya *Oligonychus coffeae*)  
+- Tikus (*Rattus* spp.) yang menggerogoti batang dan biji padi  
+- Burung pemakan padi, seperti bebek dan itik liar.","Hama bukan serangga pada padi antara lain tikus, siput murbei atau keong mas, dan babi hutan.",0.9039437903577946,0.29,openai/gpt-oss-120b,llm,setara,0.0,1.689,1.69,256,497,369
+Apa saja penyakit padi yang disebabkan oleh virus?,"### Penyakit Virus pada Padi  
+
+Beberapa penyakit padi yang disebabkan oleh virus antara lain:
+
+- Penyakit tungro padi (RTBV & RTSV)  
+- Penyakit dwarf padi (Rice dwarf virus)  
+- Penyakit stripe padi (Rice stripe virus)  
+- Penyakit hoja blanca padi (Rice hoja blanca virus)  
+- Penyakit ragged stunt padi (Rice ragged stunt virus)  
+- Penyakit black‑streaked dwarf padi (Rice black‑streaked dwarf virus)  
+- Penyakit gall dwarf padi (Rice gall dwarf virus)  
+- Penyakit yellow stunt padi (Rice yellow stunt virus)  ","Penyakit virus pada padi antara lain tungro yang ditularkan wereng hijau, serta kerdil rumput dan kerdil hampa yang ditularkan wereng batang cokelat.",0.8659766736023146,0.0,openai/gpt-oss-120b,llm,setara,0.0,2.037,2.038,251,417,268
+Apa saja penyakit padi yang disebabkan oleh jamur?,"Berikut beberapa penyakit padi yang disebabkan oleh jamur:
+
+### Penyakit jamur pada padi
+
+- **Penyakit hawar daun (Leaf Blast)** – menyerang daun, menyebabkan lesi berbentuk bulat berwarna coklat kehitaman.  
+- **Penyakit hawar batang (Sheath Blight)** – muncul pada selubung batang, menimbulkan busuk lunak berwarna abu‑abu kehitaman.  
+- **Penyakit bercak coklat (Brown Spot)** – bercak bulat‑bulat berwarna coklat pada daun dan batang.  
+- **Penyakit hawar bulir (Panicle Blast)** – mempengaruhi bulir, menghasilkan lesi berwarna coklat kehitaman pada anakan padi.  
+- **Penyakit hawar akar (Root Rot)** – jamur menyerang akar, menyebabkan akar menjadi busuk dan tanaman layu.  ","Penyakit padi yang disebabkan jamur antara lain blas (Pyricularia oryzae), bercak cokelat (Drechslera oryzae), hawar pelepah daun dan busuk batang (Rhizoctonia solani), serta bakanae atau hawar Fusarium (Fusarium moniliforme).",0.9556584300386138,0.35,openai/gpt-oss-120b,llm,setara,0.0,1.472,1.473,252,314,112
+Apa saja hama dan penyakit padi dengan serangan terluas di Indonesia dalam sepuluh tahun terakhir?,"Berikut ini beberapa hama dan penyakit padi yang paling sering menyerang di Indonesia selama sepuluh tahun terakhir:
+
+- **Hama**: wereng coklat (brown planthopper), wereng hijau (green leafhopper), penggerek batang (stem borer), dan kutu kebul (rice leafhopper).  
+- **Penyakit**: blas (blast), hawar (sheath blight), karat (rust), dan layu bakteri (bacterial wilt).  
+
+Hama‑hama tersebut biasanya muncul pada musim hujan, sedangkan penyakit cenderung meningkat pada kondisi lembab dan suhu tinggi. Pengendalian terpadu (IPM) serta penggunaan varietas tahan menjadi kunci mengurangi kerugian.","Serangan terluas adalah penggerek batang padi dengan luas kumulatif lebih dari satu juta hektare, diikuti tikus, kresek, wereng batang cokelat, tungro, dan kerdil rumput/kerdil hampa.",0.9323775492713912,0.3,openai/gpt-oss-120b,llm,setara,0.0,2.44,2.441,263,236,72
+Sebutkan jenis-jenis penggerek batang padi yang ada di Indonesia.,"### Jenis Penggerek Batang Padi di Indonesia  
+
+Penggerek batang padi yang paling umum ditemui di Indonesia meliputi beberapa spesies serangga berikut.
+
+- **Scirpophaga incertulas** – dikenal sebagai penggerek batang padi utama, larvanya menggali terowongan di dalam batang.  
+- **Chilo suppressalis** – penggerek batang padi yang juga menyerang padi muda, menyebabkan batang menjadi rapuh.  
+- **Sesamia inferens** – penggerek batang padi yang biasanya menyerang pada fase akhir pertumbuhan padi.  
+
+Jika ada jenis lain yang belum disebutkan, biasanya mereka merupakan varian lokal atau kurang umum.","Jenis penggerek batang padi meliputi penggerek batang padi kuning (Scirpophaga incertulas), penggerek batang padi putih (Scirpophaga innotata), penggerek batang padi bergaris (Chilo suppressalis), penggerek batang padi berkepala hitam (Chilo polychrysus), dan penggerek batang padi merah jambu (Sesamia inferens).",0.8194138034229309,0.0,openai/gpt-oss-120b,llm,setara,0.0,2.157,2.158,257,394,239

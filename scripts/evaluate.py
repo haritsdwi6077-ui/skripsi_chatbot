@@ -30,6 +30,15 @@ Menilai ulang hanya baris yang skornya masih kosong (tanpa menjawab ulang):
 Menilai ulang metrik tertentu pada soal tertentu dan mengganti skor lamanya:
     python scripts/evaluate.py --mode rag --nilai-ulang salinan.csv --metrik fc,cr --baris 2,12 --timpa
 
+Kontrol LLM saja dengan instruksi yang sama dengan mode RAG (peran, bahasa, format):
+    python scripts/evaluate.py --mode llm --prompt-llm setara --out hasil\\glm_llm_setara.csv
+
+Mengurangi variasi LLM penilai: setiap baris dinilai N kali, skor akhirnya rata-rata.
+Lakukan pada KEDUA mode dengan metrik dan N yang sama agar adil:
+    python scripts/evaluate.py --mode rag --nilai-ulang salinan_rag.csv --metrik fc,ar --ulangi 3
+    python scripts/evaluate.py --mode llm --nilai-ulang salinan_llm.csv --metrik fc,ar --ulangi 3
+Skor tiap putaran disimpan di <nama>_ulangi.csv untuk lampiran.
+
 Catatan: RAGAS memakai LLM sebagai penilai. Agar penilaian tidak bias, sebaiknya
 LLM penilai berbeda dari LLM yang diuji (atur lewat JUDGE_* di bawah), dan LLM
 penilai yang sama dipakai untuk seluruh model yang dibandingkan.
@@ -108,6 +117,9 @@ def main() -> None:
                              "untuk pertanyaan bertipe daftar)")
     parser.add_argument("--mode", choices=["rag", "llm"], default="rag",
                         help="rag = LLM + RAG (default), llm = LLM saja tanpa retrieval")
+    parser.add_argument("--prompt-llm", choices=["kosong", "setara"], default="kosong",
+                        help="khusus --mode llm: kosong = LLM murni tanpa system prompt (default), "
+                             "setara = instruksi sama dengan mode RAG")
     parser.add_argument("--batas", type=int, default=0,
                         help="hanya jalankan N pertanyaan pertama (untuk uji coba), 0 = semua")
     parser.add_argument("--jeda", type=float, default=2.0,
@@ -126,6 +138,9 @@ def main() -> None:
                         help="hanya nomor soal tertentu saat --nilai-ulang, mis. 2,12,17 (mulai 1)")
     parser.add_argument("--timpa", action="store_true",
                         help="saat --nilai-ulang, ganti skor lama dengan skor baru (bukan hanya yang kosong)")
+    parser.add_argument("--ulangi", type=int, default=1,
+                        help="saat --nilai-ulang, nilai setiap baris N kali lalu ambil rata-ratanya "
+                             "(otomatis --timpa bila N > 1); rincian per putaran ke <nama>_ulangi.csv")
     parser.add_argument("--timeout", type=int, default=BATAS_WAKTU_BAWAAN,
                         help="batas waktu (detik) setiap tugas penilaian RAGAS (default 180); "
                              "naikkan bila penilai lambat, mis. 600")
@@ -150,13 +165,17 @@ def main() -> None:
             if salah:
                 raise SystemExit(f"BERHENTI: kode metrik tidak dikenal: {', '.join(sorted(salah))}")
         nomor = [int(x) for x in args.baris.split(",") if x.strip()] if args.baris else None
-        nilai_ulang(args.nilai_ulang, args.mode, args.workers, pilih, nomor, args.timpa)
+        if args.ulangi < 1:
+            raise SystemExit("BERHENTI: --ulangi minimal 1.")
+        nilai_ulang(args.nilai_ulang, args.mode, args.workers, pilih, nomor, args.timpa,
+                    args.ulangi)
         return
 
     testset = json.loads(Path(args.testset).read_text(encoding="utf-8"))
     if args.batas:
         testset = testset[:args.batas]
-    print(f"Model diuji: {model_uji} | penilai: {JUDGE_MODEL} | mode: {args.mode} | "
+    info_prompt = f" | prompt: {args.prompt_llm}" if args.mode == "llm" else ""
+    print(f"Model diuji: {model_uji} | penilai: {JUDGE_MODEL} | mode: {args.mode}{info_prompt} | "
           f"{len(testset)} pertanyaan\n")
 
     def jawab(pertanyaan: str) -> dict:
@@ -165,7 +184,8 @@ def main() -> None:
             try:
                 if args.mode == "rag":
                     return engine.answer(pertanyaan, top_k=args.top_k, model=args.model)
-                return engine.answer_tanpa_rag(pertanyaan, model=args.model)
+                return engine.answer_tanpa_rag(pertanyaan, model=args.model,
+                                               prompt=args.prompt_llm)
             except Exception as exc:  # noqa: BLE001
                 if ke == 4:
                     raise
@@ -202,6 +222,8 @@ def main() -> None:
     df_waktu.insert(0, "user_input", [s["user_input"] for s in samples])
     df_waktu.insert(1, "model", model_uji)
     df_waktu.insert(2, "mode", args.mode)
+    if args.mode == "llm":
+        df_waktu.insert(3, "prompt_llm", args.prompt_llm)
     path_waktu = Path(args.out).with_name(Path(args.out).stem + "_waktu.csv")
     df_waktu.to_csv(path_waktu, index=False)
     ringkas = df_waktu[["retrieval_s", "generation_s", "total_s"]].astype(float)
@@ -296,14 +318,18 @@ def laporkan(df: pd.DataFrame, metrik: list[str], out: str, mode: str) -> None:
 
 
 def nilai_ulang(path: str, mode: str, workers: int, pilih: set | None = None,
-                nomor: list[int] | None = None, timpa: bool = False) -> None:
+                nomor: list[int] | None = None, timpa: bool = False, ulangi: int = 1) -> None:
     """Nilai ulang skor pada CSV hasil sebelumnya tanpa menjawab ulang pertanyaan.
 
     Bawaan: hanya sel yang kosong diisi, skor yang sudah ada tidak diubah.
-    pilih : kode metrik yang dinilai ulang (None = semua).
-    nomor : nomor soal (mulai 1) yang dinilai ulang (None = semua baris).
-    timpa : True = skor lama pada metrik dan soal terpilih diganti dengan skor baru.
+    pilih  : kode metrik yang dinilai ulang (None = semua).
+    nomor  : nomor soal (mulai 1) yang dinilai ulang (None = semua baris).
+    timpa  : True = skor lama pada metrik dan soal terpilih diganti dengan skor baru.
+    ulangi : setiap baris dinilai sebanyak ini, skor akhirnya rata-rata putaran
+             yang berhasil (skor kosong tidak dihitung). Bila > 1, otomatis timpa.
     """
+    if ulangi > 1:
+        timpa = True
     df = pd.read_csv(path)
     kolom_info = {"model", "mode", "retrieval_s", "generation_s", "total_s",
                   "prompt_tokens", "completion_tokens", "reasoning_tokens"}
@@ -316,7 +342,8 @@ def nilai_ulang(path: str, mode: str, workers: int, pilih: set | None = None,
     else:
         baris = [i for i in calon if df.loc[i, sasaran].isna().any()]
     print(f"Penilai: {JUDGE_MODEL} | metrik: {', '.join(sasaran)} | "
-          f"{len(baris)} baris dinilai ulang{' (skor lama ditimpa)' if timpa else ''}")
+          f"{len(baris)} baris dinilai ulang{' (skor lama ditimpa)' if timpa else ''}"
+          f"{f' | {ulangi} putaran, skor akhir = rata-rata' if ulangi > 1 else ''}")
     if not baris:
         return
     samples = []
@@ -326,17 +353,37 @@ def nilai_ulang(path: str, mode: str, workers: int, pilih: set | None = None,
         if mode == "rag":
             s["retrieved_contexts"] = list(ast.literal_eval(df.at[i, "retrieved_contexts"]))
         samples.append(s)
-    baru = nilai(samples, mode, workers, pilih)
-    terisi = 0
+
+    putaran = []  # satu DataFrame hasil nilai() per putaran
+    for ke in range(1, ulangi + 1):
+        if ulangi > 1:
+            print(f"\n--- Putaran {ke}/{ulangi} ---")
+        putaran.append(nilai(samples, mode, workers, pilih))
+
+    rincian = []
+    terisi, gagal = 0, []
     for j, i in enumerate(baris):
         for m in sasaran:
-            if m not in baru.columns or pd.isna(baru.at[j, m]):
+            skor = [p.at[j, m] for p in putaran if m in p.columns and pd.notna(p.at[j, m])]
+            for ke, p in enumerate(putaran, start=1):
+                nilai_ke = p.at[j, m] if m in p.columns else float("nan")
+                rincian.append({"no": i + 1, "user_input": df.at[i, "user_input"],
+                                "metrik": m, "putaran": ke, "skor": nilai_ke})
+            if not skor:
+                gagal.append(f"soal {i + 1} {m}")
                 continue
             if timpa or pd.isna(df.at[i, m]):
-                df.at[i, m] = baru.at[j, m]
+                df.at[i, m] = sum(skor) / len(skor)
                 terisi += 1
     df.to_csv(path, index=False)
+    if ulangi > 1:
+        path_rincian = Path(path).with_name(Path(path).stem + "_ulangi.csv")
+        pd.DataFrame(rincian).to_csv(path_rincian, index=False)
+        print(f"\nSkor tiap putaran disimpan di {path_rincian}")
     print(f"\n{terisi} skor {'diperbarui' if timpa else 'kosong berhasil diisi'}.")
+    if gagal:
+        print(f"{len(gagal)} skor gagal di semua putaran, skor lama dipertahankan: "
+              + ", ".join(gagal[:20]) + (" ..." if len(gagal) > 20 else ""))
     laporkan(df, metrik, path, mode)
 
 if __name__ == "__main__":

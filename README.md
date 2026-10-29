@@ -156,10 +156,24 @@ python scripts/evaluate.py --mode llm --out hasil_llm.csv   # LLM saja
 python scripts/rekap_hasil.py --rag hasil_rag.csv --llm hasil_llm.csv   # tabel BAB IV
 ```
 
-`rekap_hasil.py` menghitung rata-rata, simpangan baku, minimum, dan maksimum setiap
-metrik, uji Wilcoxon berpasangan pada answer relevancy dan factual correctness,
-waktu respons, serta rata-rata per jenis pertanyaan, lalu menyimpannya ke
-`rekap_hasil.md`. Skor kosong (NaN) tidak dihitung sebagai nol dan didaftar di akhir.
+Opsi tambahan:
+
+```bash
+# Kontrol: LLM saja dengan instruksi yang sama dengan mode RAG (peran, bahasa, format)
+python scripts/evaluate.py --mode llm --prompt-llm setara --out hasil_llm_setara.csv
+# Nilai setiap soal 3 kali lalu ambil rata-ratanya (lakukan pada kedua mode)
+python scripts/evaluate.py --mode rag --nilai-ulang hasil_rag.csv --metrik fc,ar --ulangi 3
+# Uji sensitivitas: ulangi uji Wilcoxon tanpa soal yang penilaiannya diragukan
+python scripts/rekap_hasil.py --rag hasil_rag.csv --llm hasil_llm.csv --keluarkan 1,5,13
+# Hit rate halaman sumber untuk beberapa TOP_K dan MMR_LAMBDA, tanpa LLM penilai
+python scripts/bandingkan_retrieval.py
+```
+
+`rekap_hasil.py` menghitung rata-rata, median, simpangan baku, minimum, maksimum,
+dan jumlah skor nol setiap metrik, uji Wilcoxon berpasangan beserta ukuran efek r
+pada answer relevancy dan factual correctness, waktu respons, serta rata-rata per
+jenis pertanyaan, lalu menyimpannya ke `rekap_hasil.md`. Skor kosong (NaN) tidak
+dihitung sebagai nol dan didaftar di akhir.
 Opsi `--jeda` (default 2 detik) dan `--workers` (default 4) pada `evaluate.py` dapat
 diatur bila sering terkena batas kuota API.
 

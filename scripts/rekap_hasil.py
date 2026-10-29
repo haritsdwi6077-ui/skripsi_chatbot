@@ -10,15 +10,20 @@ Keluaran ditampilkan di layar dan disimpan ke rekap_hasil.md. Skor yang kosong
 (NaN, biasanya karena LLM penilai gagal mengurai jawaban) TIDAK dihitung sebagai
 nol. Jumlah skor yang valid dilaporkan di kolom n agar terlihat jelas.
 
+Uji sensitivitas: keluarkan soal yang penilaiannya diragukan (hasil verifikasi
+manual), lalu uji Wilcoxon diulang pada soal yang tersisa:
+    python scripts/rekap_hasil.py --rag hasil\\glm_rag_v2.csv --llm hasil\\glm_llm.csv --keluarkan 1,5,13
+
 Butuh: pandas, scipy  (pip install scipy)
 """
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 import pandas as pd
-from scipy.stats import wilcoxon
+from scipy.stats import norm, wilcoxon
 
 METRIK_RAG = {
     "llm_context_precision_with_reference": "Context precision",
@@ -51,14 +56,58 @@ def angka(x: float, d: int = 4) -> str:
 
 
 def statistik(df: pd.DataFrame, kolom: list[str]) -> list[list[str]]:
+    """Median dan jumlah skor nol ikut dilaporkan, karena sebaran skor RAGAS
+    (terutama factual correctness) miring dan banyak bernilai 0."""
     baris = []
     for k in kolom:
         if k not in df.columns:
             continue
         s = pd.to_numeric(df[k], errors="coerce").dropna()
-        baris.append([METRIK_RAG[k], str(len(s)), angka(s.mean()), angka(s.std(ddof=1)),
-                      angka(s.min()), angka(s.max())])
+        baris.append([METRIK_RAG[k], str(len(s)), angka(s.mean()), angka(s.median()),
+                      angka(s.std(ddof=1)), angka(s.min()), angka(s.max()), str(int((s == 0).sum()))])
     return baris
+
+
+def kategori_efek(r: float) -> str:
+    """Batas Cohen untuk r: 0,1 kecil, 0,3 sedang, 0,5 besar."""
+    if pd.isna(r):
+        return "-"
+    if r >= 0.5:
+        return "besar"
+    if r >= 0.3:
+        return "sedang"
+    if r >= 0.1:
+        return "kecil"
+    return "sangat kecil"
+
+
+def uji_wilcoxon(gabung: pd.DataFrame, alpha: float) -> list[list[str]]:
+    """Uji peringkat bertanda Wilcoxon berpasangan per pertanyaan, dengan ukuran
+    efek r = Z / akar(n), n = jumlah pasangan yang skornya tidak sama."""
+    baris = []
+    for k in METRIK_BERSAMA:
+        pasangan = gabung[[f"{k}_rag", f"{k}_llm"]].apply(pd.to_numeric, errors="coerce").dropna()
+        x, y = pasangan[f"{k}_rag"], pasangan[f"{k}_llm"]
+        beda = x - y
+        naik, turun, sama = int((beda > 0).sum()), int((beda < 0).sum()), int((beda == 0).sum())
+        n_beda = naik + turun
+        if n_beda >= 1:
+            uji = wilcoxon(x, y, zero_method="wilcox", alternative="two-sided")
+            stat, nilai_p = uji.statistic, uji.pvalue
+            z = norm.isf(nilai_p / 2) if nilai_p > 0 else float("inf")
+            r = z / math.sqrt(n_beda)
+            keputusan = "H0 ditolak" if nilai_p < alpha else "H0 diterima"
+        else:
+            stat, nilai_p, r, keputusan = float("nan"), float("nan"), float("nan"), "tidak dapat diuji"
+        baris.append([METRIK_RAG[k], str(len(pasangan)), angka(x.mean()), angka(y.mean()),
+                      angka(x.mean() - y.mean()), angka(stat, 1), angka(nilai_p),
+                      angka(r, 3), kategori_efek(r), keputusan, f"{naik}/{turun}/{sama}"])
+    return baris
+
+
+HEAD_WILCOXON = ["Metrik", "n pasangan", "Dengan RAG", "Tanpa RAG", "Selisih", "Statistik T",
+                 "Nilai p", "Ukuran efek r", "Kategori efek", "Keputusan",
+                 "RAG lebih tinggi/lebih rendah/sama"]
 
 
 def tabel_md(judul: str, header: list[str], baris: list[list[str]]) -> str:
@@ -76,6 +125,9 @@ def main() -> None:
                    help="dipakai untuk rekap per jenis pertanyaan bila ada kunci 'jenis'")
     p.add_argument("--alpha", type=float, default=0.05)
     p.add_argument("--out", default="rekap_hasil.md")
+    p.add_argument("--keluarkan", default=None,
+                   help="nomor soal (mulai 1, urutan testset) yang dikeluarkan pada uji "
+                        "sensitivitas, mis. 1,5,13")
     a = p.parse_args()
 
     rag = seragamkan(pd.read_csv(a.rag))
@@ -84,7 +136,8 @@ def main() -> None:
     keluaran.append(f"\nJumlah pertanyaan: mode RAG = {len(rag)}"
                     + (f", mode tanpa RAG = {len(llm)}" if llm is not None else ""))
 
-    head = ["Metrik", "n", "Rata-rata", "Simpangan baku", "Minimum", "Maksimum"]
+    head = ["Metrik", "n", "Rata-rata", "Median", "Simpangan baku", "Minimum", "Maksimum",
+            "Jumlah skor 0"]
     keluaran.append(tabel_md("Tabel 4.18 Hasil evaluasi RAGAS mode LLM dengan RAG", head,
                              statistik(rag, list(METRIK_RAG))))
     if llm is not None:
@@ -93,25 +146,17 @@ def main() -> None:
 
         # Uji peringkat bertanda Wilcoxon, berpasangan per pertanyaan
         gabung = rag.merge(llm, on="user_input", suffixes=("_rag", "_llm"))
-        baris = []
-        for k in METRIK_BERSAMA:
-            pasangan = gabung[[f"{k}_rag", f"{k}_llm"]].apply(pd.to_numeric, errors="coerce").dropna()
-            x, y = pasangan[f"{k}_rag"], pasangan[f"{k}_llm"]
-            beda = x - y
-            naik, turun, sama = int((beda > 0).sum()), int((beda < 0).sum()), int((beda == 0).sum())
-            if (beda != 0).sum() >= 1:
-                uji = wilcoxon(x, y, zero_method="wilcox", alternative="two-sided")
-                stat, nilai_p = uji.statistic, uji.pvalue
-                keputusan = "H0 ditolak" if nilai_p < a.alpha else "H0 diterima"
-            else:
-                stat, nilai_p, keputusan = float("nan"), float("nan"), "tidak dapat diuji"
-            baris.append([METRIK_RAG[k], str(len(pasangan)), angka(x.mean()), angka(y.mean()),
-                          angka(x.mean() - y.mean()), angka(stat, 1), angka(nilai_p),
-                          keputusan, f"{naik}/{turun}/{sama}"])
-        keluaran.append(tabel_md(
-            "Tabel 4.20 Perbandingan skor dan hasil uji Wilcoxon",
-            ["Metrik", "n pasangan", "Dengan RAG", "Tanpa RAG", "Selisih", "Statistik T",
-             "Nilai p", "Keputusan", "RAG lebih tinggi/lebih rendah/sama"], baris))
+        keluaran.append(tabel_md("Tabel 4.20 Perbandingan skor dan hasil uji Wilcoxon",
+                                 HEAD_WILCOXON, uji_wilcoxon(gabung, a.alpha)))
+
+        if a.keluarkan:
+            nomor = sorted({int(x) for x in a.keluarkan.split(",") if x.strip()})
+            soal = {rag.at[n - 1, "user_input"] for n in nomor if 1 <= n <= len(rag)}
+            sisa = gabung[~gabung["user_input"].isin(soal)]
+            keluaran.append(tabel_md(
+                f"Uji sensitivitas: {len(soal)} soal dikeluarkan (no. "
+                f"{', '.join(map(str, nomor))}), {len(sisa)} soal tersisa",
+                HEAD_WILCOXON, uji_wilcoxon(sisa, a.alpha)))
 
     # Waktu respons
     baris = []

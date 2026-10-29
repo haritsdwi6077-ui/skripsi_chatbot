@@ -45,12 +45,27 @@ SYSTEM_PROMPT = (
     + FORMAT_JAWABAN
 )
 
-# Prompt pembanding (LLM saja, tanpa retrieval). Peran, bahasa, dan gaya jawaban
-# dibuat sama dengan SYSTEM_PROMPT agar perbedaan hasil hanya berasal dari ada
-# atau tidaknya konteks hasil retrieval.
-SYSTEM_PROMPT_TANPA_RAG = (
-    ""
+# Prompt pembanding (LLM saja, tanpa retrieval). Ada dua varian:
+#   "kosong" : LLM murni tanpa system prompt. Ini rancangan utama penelitian,
+#              dipakai untuk glm_llm.csv (LLM bawaan vs sistem RAG lengkap).
+#   "setara" : peran, bahasa, ranah, dan format jawaban dibuat sama dengan
+#              SYSTEM_PROMPT. Aturan yang bergantung pada konteks (nomor sumber,
+#              "jawab hanya dari konteks") tidak disertakan karena tidak ada
+#              konteks. Varian ini menjadi kontrol, agar selisih skor dapat
+#              dikaitkan dengan retrieval, bukan dengan perbedaan instruksi
+#              atau panjang jawaban.
+SYSTEM_PROMPT_TANPA_RAG = ""
+
+SYSTEM_PROMPT_TANPA_RAG_SETARA = (
+    "Anda adalah asisten penyuluh pertanian yang menjawab pertanyaan seputar "
+    "hama dan penyakit tanaman padi. Jawaban selalu ditulis dalam bahasa "
+    "Indonesia yang ringkas dan mudah dipahami petani. Jika Anda tidak "
+    "mengetahui jawabannya, katakan terus terang dan jangan mengarang jawaban."
+    + RANAH
+    + FORMAT_JAWABAN
 )
+
+PROMPT_TANPA_RAG = {"kosong": SYSTEM_PROMPT_TANPA_RAG, "setara": SYSTEM_PROMPT_TANPA_RAG_SETARA}
 
 # --- Percakapan berkelanjutan ---------------------------------------------
 # Pertanyaan lanjutan ("cara pencegahannya gimana?") tidak menyebut nama hama
@@ -328,7 +343,7 @@ def answer(question: str, top_k: int | None = None, model: str | None = None,
     )
     t2 = time.perf_counter()
     return {
-        "answer": hasil["text"],
+        "answer": rapikan_sitasi(hasil["text"]),
         "contexts": contexts,
         "pertanyaan_mandiri": pertanyaan,
         "timing": {
@@ -343,16 +358,20 @@ def answer(question: str, top_k: int | None = None, model: str | None = None,
 
 
 def answer_tanpa_rag(question: str, model: str | None = None,
-                     riwayat: list[dict] | None = None) -> dict:
+                     riwayat: list[dict] | None = None, prompt: str = "kosong") -> dict:
     """Pembanding: pertanyaan langsung ke LLM tanpa retrieval (LLM saja).
 
     Struktur hasil sama dengan answer(), dengan contexts kosong dan
     retrieval_s = 0, sehingga kedua mode dapat dievaluasi dan dibandingkan.
+    prompt: "kosong" (LLM murni, bawaan) atau "setara" (instruksi sama dengan
+    mode RAG, lihat SYSTEM_PROMPT_TANPA_RAG_SETARA).
     """
+    if prompt not in PROMPT_TANPA_RAG:
+        raise ValueError(f"prompt harus salah satu dari {sorted(PROMPT_TANPA_RAG)}")
     t0 = time.perf_counter()
     hasil = llm.generate_detail(
         f"Pertanyaan pengguna:\n{question}\n\nJawaban:",
-        system_prompt=SYSTEM_PROMPT_TANPA_RAG,
+        system_prompt=PROMPT_TANPA_RAG[prompt],
         model=model,
         riwayat=rapikan_riwayat(riwayat),  # tanpa retrieval, LLM cukup melihat riwayat
     )
@@ -374,6 +393,14 @@ def answer_tanpa_rag(question: str, model: str | None = None,
 
 # Nomor rujukan di jawaban: [1], [1, 3], atau gaya gpt-oss 【1】 / 【1†L5-L9】
 POLA_RUJUKAN = re.compile(r"\[(\d+(?:\s*,\s*\d+)*)\]|【\s*(\d+)[^】]*】")
+# gpt-oss kadang memakai gaya kutipan bawaannya 【1】 atau 【1†L1-L4】 walaupun
+# prompt meminta [1]. Diseragamkan agar tampilan dan teks yang dinilai konsisten.
+POLA_SITASI_GPT = re.compile(r"【\s*(\d+)[^】]*】")
+
+
+def rapikan_sitasi(teks: str) -> str:
+    """Ubah 【1】 / 【1†L1-L4】 menjadi [1]."""
+    return POLA_SITASI_GPT.sub(r"[\1]", teks or "")
 
 
 def _label_sumber(ctx: dict) -> str:
