@@ -9,6 +9,7 @@ import re
 import time
 
 from rag_core import config, embeddings, llm
+from rag_core.pertanyaan import lengkapi_pertanyaan
 from database import vector_db
 
 # Aturan tampilan jawaban. Dipakai di KEDUA mode agar perbandingan tetap adil.
@@ -342,6 +343,9 @@ def answer(question: str, top_k: int | None = None, model: str | None = None,
     t0 = time.perf_counter()
     riwayat = rapikan_riwayat(riwayat)
     pertanyaan, rewrite_s = tulis_ulang_pertanyaan(question, riwayat, model=model)
+    if not riwayat:
+        # Pertanyaan pertama yang terpotong, misalnya "padi adalah", dilengkapi dengan aturan
+        pertanyaan = lengkapi_pertanyaan(pertanyaan)
     t_awal = time.perf_counter()
     contexts = retrieve(pertanyaan, top_k=top_k)
     t1 = time.perf_counter()
