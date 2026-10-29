@@ -36,6 +36,7 @@ rag_core/embeddings.py     embedding dokumen & kueri (Jina AI)
 rag_core/llm.py            pemanggilan LLM (format OpenAI, penyedia mudah diganti)
 rag_core/engine.py         retrieval + prompt + generation, serta mode tanpa RAG
 rag_core/saran.py          saran pertanyaan lanjutan (aturan, tanpa LLM)
+rag_core/pertanyaan.py     melengkapi pertanyaan terpotong sebelum pencarian
 templates/index.html       halaman web: percakapan, riwayat, panduan, tema
 tests/                     uji otomatis (python -m pytest tests)
 database/vector_db.py      koneksi & operasi Qdrant Cloud
@@ -128,6 +129,11 @@ pencegahannya gimana?" ditulis ulang oleh LLM menjadi pertanyaan mandiri
 pencarian dokumen. Riwayat yang dipakai maksimal 3 giliran terakhir. Ketik
 `baru` di CLI atau tekan **Percakapan baru** di web untuk memulai ulang.
 Evaluasi tetap satu pertanyaan per uji, tanpa riwayat.
+
+Pertanyaan pertama yang terpotong, misalnya "padi adalah" atau "pengertian blas",
+dilengkapi menjadi "Apa itu padi?" sebelum pencarian (`rag_core/pertanyaan.py`,
+aturan tanpa LLM). Seluruh pertanyaan test set tidak berubah oleh langkah ini
+(`tests/test_pertanyaan.py`), jadi hasil evaluasi tetap sama.
 
 Halaman web punya pilihan **Mode jawaban**: *Dengan RAG* (bawaan) dan *Tanpa RAG*
 (LLM saja, pembanding). Mode tanpa RAG juga bisa dibuka langsung lewat
