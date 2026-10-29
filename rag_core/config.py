@@ -56,3 +56,11 @@ CHUNK_OVERLAP = int(os.environ.get("CHUNK_OVERLAP", "180"))
 
 REQUEST_TIMEOUT = int(os.environ.get("REQUEST_TIMEOUT", "60"))
 
+# --- Gaya jawaban mode RAG ---
+# "standar" = instruksi sistem yang dipakai saat evaluasi RAGAS (bawaan, agar hasil
+#             evaluasi bisa diulang).
+# "langsung" = kalimat pertama langsung menjawab inti pertanyaan, tanpa kalimat
+#             pembuka. Menanggapi masukan responden kuesioner. Aktifkan di aplikasi
+#             web dengan GAYA_JAWABAN=langsung (misalnya di Environment Variables Vercel).
+GAYA_JAWABAN = os.environ.get("GAYA_JAWABAN", "standar").strip().lower()
+

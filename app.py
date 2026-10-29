@@ -16,7 +16,7 @@ import os
 
 from flask import Flask, jsonify, render_template, request
 
-from rag_core import config, engine
+from rag_core import config, engine, saran
 
 app = Flask(__name__)
 
@@ -38,6 +38,7 @@ def health():
             "modes": ["rag", "llm"] if TAMPILKAN_MODE else ["rag"],
             "embedding": config.EMBEDDING_MODEL,
             "collection": config.QDRANT_COLLECTION,
+            "gaya_jawaban": config.GAYA_JAWABAN,
         }
     )
 
@@ -66,13 +67,16 @@ def chat():
         app.logger.exception("Gagal memproses pertanyaan")
         return jsonify({"error": f"Sistem gagal memproses pertanyaan: {exc}"}), 500
 
+    pertanyaan_mandiri = hasil.get("pertanyaan_mandiri", question)
     return jsonify(
         {
             "answer": hasil["answer"],
             "mode": mode,
             "sources": engine.sumber_dikutip(hasil["answer"], hasil["contexts"]),
-            "standalone_question": hasil.get("pertanyaan_mandiri", question),
+            "standalone_question": pertanyaan_mandiri,
             "timing": hasil.get("timing", {}),
+            # Saran pertanyaan lanjutan (aturan, tanpa LLM); lihat rag_core/saran.py
+            "suggestions": saran.saran_lanjutan(pertanyaan_mandiri, hasil["answer"]),
         }
     )
 

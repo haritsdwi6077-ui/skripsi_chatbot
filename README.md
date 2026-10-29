@@ -35,6 +35,9 @@ rag_core/config.py         konfigurasi dari environment variable
 rag_core/embeddings.py     embedding dokumen & kueri (Jina AI)
 rag_core/llm.py            pemanggilan LLM (format OpenAI, penyedia mudah diganti)
 rag_core/engine.py         retrieval + prompt + generation, serta mode tanpa RAG
+rag_core/saran.py          saran pertanyaan lanjutan (aturan, tanpa LLM)
+templates/index.html       halaman web: percakapan, riwayat, panduan, tema
+tests/                     uji otomatis (python -m pytest tests)
 database/vector_db.py      koneksi & operasi Qdrant Cloud
 interface/cli.py           antarmuka baris perintah
 scripts/ingest.py          dijalankan lokal -> Qdrant Cloud
@@ -131,6 +134,24 @@ Halaman web punya pilihan **Mode jawaban**: *Dengan RAG* (bawaan) dan *Tanpa RAG
 `http://127.0.0.1:5000/?mode=llm`. Untuk versi yang dipakai petani, sembunyikan
 pilihan ini dengan environment variable `TAMPILKAN_MODE=0`.
 
+### Perbaikan dari masukan responden kuesioner
+
+| Masukan responden | Perbaikan |
+|---|---|
+| Riwayat hilang saat halaman dimuat ulang | Percakapan tersimpan otomatis di browser (`localStorage`) dan dibuka lagi saat halaman dimuat ulang. Draf pertanyaan yang belum dikirim juga tersimpan. |
+| Ingin melihat pertanyaan lama ("laman lama") | Panel **Riwayat** berisi percakapan lama yang dikelompokkan per hari, bisa dicari, dibuka lagi, atau dihapus. Riwayat tidak dikirim ke server. |
+| Harus bertanya berulang, ingin rekomendasi pertanyaan lanjutan | Setiap jawaban diberi tiga **pertanyaan lanjutan** yang tinggal diketuk (`rag_core/saran.py`). Saran disusun dengan aturan dari nama hama/penyakit dan aspek yang ditanyakan, tanpa memanggil LLM. |
+| Jawaban kurang langsung ke inti | Opsi `GAYA_JAWABAN=langsung` (lihat di bawah). |
+| Perlu panduan untuk pengguna awam | Layar awal berisi tiga langkah bertanya serta daftar yang bisa dan belum bisa ditanyakan. Tombol **Panduan** membuka panduan lengkap, termasuk tips menulis pertanyaan. |
+| Tampilan dan warna kurang modern, kolom perlu dirapikan | Tema baru hijau gelap dan tema terang, huruf Plus Jakarta Sans, tata letak riwayat di samping (laptop) atau laci (HP). |
+
+**Gaya jawaban.** `GAYA_JAWABAN=standar` (bawaan) memakai instruksi sistem yang
+sama dengan saat evaluasi RAGAS, sehingga hasil evaluasi tetap bisa diulang.
+`GAYA_JAWABAN=langsung` menambahkan aturan agar kalimat pertama langsung menjawab
+inti pertanyaan. Aktifkan di aplikasi web lewat Environment Variables Vercel. Bila
+gaya ini juga dipakai saat evaluasi, skor RAGAS perlu dihitung ulang karena
+jawabannya berubah.
+
 ## Deploy ke Vercel
 
 1. Push repo ini ke GitHub, lalu *import* di Vercel.
@@ -138,7 +159,7 @@ pilihan ini dengan environment variable `TAMPILKAN_MODE=0`.
    Jangan pernah meng-*commit* file `.env`.
 3. Setelah deploy, cek `/api/health` untuk memastikan konfigurasi terbaca.
 
-Vercel hanya menjalankan `app.py`. Folder `data_source/`, `scripts/`, dan
+Vercel hanya menjalankan `app.py`. Folder `data_source/`, `scripts/`, `tests/`, dan
 `interface/` dikecualikan lewat `vercel.json` agar ukuran *bundle* tetap kecil.
 
 ## Evaluasi RAGAS
