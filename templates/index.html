@@ -820,9 +820,10 @@
     sibuk = true; tombolKirim.disabled = true;
     const tunggu = document.createElement('div');
     tunggu.className = 'pesan sistem menunggu';
-    tunggu.innerHTML = '<span class="titik" aria-hidden="true"><i></i><i></i><i></i></span>' +
-      (pc.mode === 'llm' ? 'Menunggu jawaban…' : 'Sedang mencari di dokumen rujukan…');
+    tunggu.innerHTML = '<span class="titik" aria-hidden="true"><i></i><i></i><i></i></span><span>Sedang diproses…</span>';
     tambahEl(tunggu);
+    // Jawaban bisa butuh 5 sampai 20 detik; beri tanda bahwa aplikasi tidak macet
+    const jedaTunggu = setTimeout(() => { tunggu.lastChild.textContent = 'Masih diproses, mohon tunggu sebentar…'; }, 8000);
 
     let pesanBaru;
     try {
@@ -845,6 +846,7 @@
     } catch (err) {
       pesanBaru = { jenis: 'galat', tanya: teks, teks: 'Tidak tersambung ke server. Periksa sinyal atau koneksi internet, lalu kirim ulang pertanyaan.' };
     } finally {
+      clearTimeout(jedaTunggu);
       tunggu.remove();
       sibuk = false; tombolKirim.disabled = false;
     }
