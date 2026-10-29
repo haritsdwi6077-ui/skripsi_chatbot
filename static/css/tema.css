@@ -1,0 +1,184 @@
+/* Tema Tanya Padi di atas Bootstrap 5.3.
+   Konsep "sawah malam": latar gelap, cahaya hanya datang dari bulir padi dan
+   garis cahaya. Palet dasar: #1C201B (malam), #63803F (zaitun), #8DAE69 (daun),
+   #EAD4A8 (gabah); #B8F27C dipakai khusus untuk pendar cahaya. */
+
+:root,
+:root[data-bs-theme="dark"] {
+  --latar: #121610;
+  --samping-latar: #151A13;
+  --permukaan: #1C201B;
+  --permukaan-2: #232A21;
+  --garis: #2B3328;
+  --garis-kuat: #3E4B37;
+  --teks: #EEF2E6;
+  --teks-redup: #A9B49E;
+  --teks-samar: #85907A;
+  --zaitun: #63803F;
+  --daun: #8DAE69;
+  --daun-muda: #B5D98C;
+  --sinar: #B8F27C;
+  --gabah: #EAD4A8;
+  --inti: #FFF6DA;
+  --tautan: #B5D98C;
+  --gelembung: #26321F;
+  --gelembung-garis: #3F5232;
+  --tombol-latar: linear-gradient(180deg, #C2E496 0%, #8DAE69 100%);
+  --tombol-teks: #10140E;
+  --rujuk-latar: rgba(234, 212, 168, .16);
+  --rujuk-teks: #EAD4A8;
+  --galat: #F0A994;
+  --galat-latar: rgba(214, 104, 78, .12);
+  --cahaya: rgba(141, 174, 105, .26);
+  --bayang: 0 18px 50px rgba(0, 0, 0, .45);
+  --huruf: "Plus Jakarta Sans", "Segoe UI", Roboto, Arial, sans-serif;
+
+  /* Variabel Bootstrap */
+  --bs-body-bg: var(--latar);
+  --bs-body-bg-rgb: 18, 22, 16;
+  --bs-body-color: var(--teks);
+  --bs-body-color-rgb: 238, 242, 230;
+  --bs-body-font-family: var(--huruf);
+  --bs-emphasis-color: #FFFFFF;
+  --bs-heading-color: var(--teks);
+  --bs-secondary-color: var(--teks-redup);
+  --bs-tertiary-color: var(--teks-samar);
+  --bs-secondary-bg: var(--permukaan-2);
+  --bs-tertiary-bg: var(--permukaan);
+  --bs-border-color: var(--garis);
+  --bs-border-color-translucent: rgba(234, 212, 168, .14);
+  --bs-link-color: var(--tautan);
+  --bs-link-color-rgb: 181, 217, 140;
+  --bs-link-hover-color: var(--sinar);
+  --bs-link-hover-color-rgb: 184, 242, 124;
+  --bs-primary: #8DAE69;
+  --bs-primary-rgb: 141, 174, 105;
+  --bs-focus-ring-color: rgba(234, 212, 168, .45);
+  --bs-border-radius: 14px;
+  --bs-border-radius-lg: 20px;
+  color-scheme: dark;
+}
+
+:root[data-bs-theme="light"] {
+  --latar: #F4EEDF;
+  --samping-latar: #EEE6D2;
+  --permukaan: #FBF8F0;
+  --permukaan-2: #F2EBDA;
+  --garis: #DDD2B8;
+  --garis-kuat: #C7B994;
+  --teks: #1C201B;
+  --teks-redup: #4F5847;
+  --teks-samar: #67705D;
+  --tautan: #4E6A2E;
+  --gelembung: #E4EBD6;
+  --gelembung-garis: #C9D6B3;
+  --tombol-latar: linear-gradient(180deg, #5E7D38 0%, #4E6A2E 100%);
+  --tombol-teks: #FBF8F0;
+  --rujuk-latar: #EAD4A8;
+  --rujuk-teks: #1C201B;
+  --galat: #9A2F1F;
+  --galat-latar: #FBECE8;
+  --cahaya: rgba(141, 174, 105, .3);
+  --bayang: 0 18px 40px rgba(60, 50, 20, .12);
+
+  --bs-body-bg: var(--latar);
+  --bs-body-bg-rgb: 244, 238, 223;
+  --bs-body-color: var(--teks);
+  --bs-body-color-rgb: 28, 32, 27;
+  --bs-emphasis-color: #000000;
+  --bs-heading-color: var(--teks);
+  --bs-secondary-color: var(--teks-redup);
+  --bs-tertiary-color: var(--teks-samar);
+  --bs-secondary-bg: var(--permukaan-2);
+  --bs-tertiary-bg: var(--permukaan);
+  --bs-border-color: var(--garis);
+  --bs-link-color: var(--tautan);
+  --bs-link-color-rgb: 78, 106, 46;
+  --bs-link-hover-color: #63803F;
+  --bs-link-hover-color-rgb: 99, 128, 63;
+  color-scheme: light;
+}
+:root[data-bs-theme="light"] #gGabah .g1 { stop-color: #E9CB86; }
+:root[data-bs-theme="light"] #gGabah .g2 { stop-color: #A47C2C; }
+
+body { font-family: var(--huruf); font-size: 1.0625rem; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { font-family: var(--huruf); letter-spacing: -.02em; }
+:focus-visible { outline: 2px solid var(--gabah); outline-offset: 2px; }
+.ikon { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Merek */
+.merek { display: inline-flex; align-items: center; gap: 10px; margin: 0; font-weight: 800; font-size: 1.1rem; letter-spacing: -.02em; color: var(--teks); text-decoration: none; white-space: nowrap; }
+.merek:hover { color: var(--teks); }
+.merek .bulir { width: 30px; height: 30px; flex: none; filter: drop-shadow(0 0 6px rgba(234, 212, 168, .45)); }
+
+/* Tombol */
+.btn { --bs-btn-font-weight: 700; --bs-btn-border-radius: 999px; --bs-btn-focus-box-shadow: 0 0 0 3px rgba(234, 212, 168, .35); }
+.btn-padi {
+  --bs-btn-padding-x: 1.5rem; --bs-btn-padding-y: .7rem;
+  color: var(--tombol-teks); background: var(--tombol-latar); border: 0;
+  box-shadow: 0 0 0 1px rgba(255, 246, 218, .28) inset, 0 8px 30px rgba(184, 242, 124, .28);
+  transition: box-shadow .2s ease, filter .2s ease, transform .2s ease;
+}
+.btn-padi:hover, .btn-padi:focus-visible { color: var(--tombol-teks); filter: brightness(1.06); box-shadow: 0 0 0 1px rgba(255, 246, 218, .35) inset, 0 10px 38px rgba(184, 242, 124, .42); }
+.btn-padi:active { transform: translateY(1px); }
+.btn-padi:disabled, .btn-padi.disabled { color: var(--tombol-teks); background: var(--tombol-latar); opacity: .55; }
+.btn-garis {
+  --bs-btn-padding-x: 1.25rem; --bs-btn-padding-y: .65rem; --bs-btn-font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  color: var(--teks); background: transparent; border: 1px solid var(--garis-kuat);
+}
+.btn-garis:hover, .btn-garis:focus-visible { color: var(--teks); background: var(--permukaan); border-color: var(--daun); }
+.btn-ikon {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px;
+  --bs-btn-padding-x: .75rem; --bs-btn-font-weight: 600; --bs-btn-font-size: .9rem;
+  color: var(--teks-redup); background: none; border: 1px solid transparent;
+}
+.btn-ikon:hover, .btn-ikon:focus-visible { color: var(--teks); background: var(--permukaan); border-color: var(--garis); }
+.btn-ikon[aria-pressed="true"] { color: var(--gabah); border-color: var(--garis-kuat); }
+
+/* Pilihan cepat */
+.chip {
+  display: inline-flex; align-items: center; text-align: left; min-height: 44px; padding: 9px 14px; cursor: pointer;
+  font-size: .95rem; line-height: 1.35; color: var(--teks); text-decoration: none;
+  background: var(--permukaan); border: 1px solid var(--garis); border-radius: 14px;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.chip:hover { color: var(--teks); border-color: var(--daun); background: var(--permukaan-2); }
+
+/* Lambang bulir padi dalam lingkaran bercahaya */
+.lambang {
+  position: relative; width: var(--ukuran, 160px); aspect-ratio: 1; margin: 0 auto; border-radius: 50%;
+  display: grid; place-items: center; isolation: isolate;
+  border: 1px solid rgba(234, 212, 168, .45);
+  background:
+    radial-gradient(circle at 50% 58%, rgba(184, 242, 124, .30), transparent 60%),
+    radial-gradient(rgba(234, 212, 168, .32) 1px, transparent 1.4px) 0 0 / 7px 7px,
+    radial-gradient(circle, #1A2016, #10140E 70%);
+  box-shadow: 0 0 0 6px rgba(184, 242, 124, .04), 0 0 70px rgba(184, 242, 124, .32), 0 0 160px rgba(141, 174, 105, .22), inset 0 0 40px rgba(184, 242, 124, .18);
+}
+.lambang::after {
+  /* kilau tipis di tepi atas lingkaran */
+  content: ""; position: absolute; inset: -1px; border-radius: 50%; z-index: -1; pointer-events: none;
+  background: conic-gradient(from 300deg, transparent 0 20%, rgba(255, 246, 218, .9) 28%, transparent 36% 100%);
+  -webkit-mask: radial-gradient(circle, transparent 69.4%, #000 70%); mask: radial-gradient(circle, transparent 69.4%, #000 70%);
+}
+.lambang svg { width: 64%; height: 64%; overflow: visible; filter: drop-shadow(0 0 10px rgba(255, 246, 218, .55)) drop-shadow(0 0 26px rgba(184, 242, 124, .35)); }
+:root[data-bs-theme="light"] .lambang {
+  border-color: rgba(99, 128, 63, .4);
+  background: radial-gradient(circle at 50% 58%, rgba(141, 174, 105, .3), transparent 62%), radial-gradient(rgba(99, 128, 63, .3) 1px, transparent 1.4px) 0 0 / 7px 7px, #FBF8F0;
+  box-shadow: 0 0 60px rgba(141, 174, 105, .3);
+}
+
+/* Garis cahaya berbentuk V (SVG) */
+.berkas path { fill: none; vector-effect: non-scaling-stroke; }
+.berkas .halo { stroke-width: 34; opacity: .2; }
+.berkas .nyala { stroke-width: 7; opacity: .55; }
+.berkas .inti { stroke-width: 1.6; }
+.berkas .denyut { stroke-width: 3; stroke: #FFFBEA; stroke-dasharray: 90 2600; stroke-dashoffset: 2690; opacity: 0; }
+
+.label-hijau { color: var(--sinar); font-weight: 600; font-size: .9rem; margin-bottom: .75rem; }
+:root[data-bs-theme="light"] .label-hijau { color: var(--tautan); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

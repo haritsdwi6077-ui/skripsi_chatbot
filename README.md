@@ -5,7 +5,7 @@ penyakit tanaman padi.
 
 | Komponen | Teknologi |
 |---|---|
-| Antarmuka & API | Flask, di-*deploy* di Vercel |
+| Antarmuka & API | Flask + Bootstrap 5.3, di-*deploy* di Vercel |
 | Vector database | Qdrant Cloud |
 | Embedding | Jina AI (`jina-embeddings-v5-text-small`, 768 dimensi) |
 | Generation (LLM) | Groq `openai/gpt-oss-120b` (endpoint kompatibel OpenAI, mudah diganti) |
@@ -29,7 +29,7 @@ berperan pada tahap *generation*, sedangkan tahap *embedding* memakai Jina AI.
 ## Struktur
 
 ```
-app.py                     Flask: halaman chat, /api/chat, /api/health
+app.py                     Flask: landing (/), halaman tanya jawab (/tanya), /api/chat, /api/health
 main.py                    menjalankan versi CLI
 rag_core/config.py         konfigurasi dari environment variable
 rag_core/embeddings.py     embedding dokumen & kueri (Jina AI)
@@ -37,7 +37,11 @@ rag_core/llm.py            pemanggilan LLM (format OpenAI, penyedia mudah digant
 rag_core/engine.py         retrieval + prompt + generation, serta mode tanpa RAG
 rag_core/saran.py          saran pertanyaan lanjutan (aturan, tanpa LLM)
 rag_core/pertanyaan.py     melengkapi pertanyaan terpotong sebelum pencarian
-templates/index.html       halaman web: percakapan, riwayat, panduan, tema
+templates/landing.html     halaman depan (landing)
+templates/index.html       halaman tanya jawab: percakapan, riwayat, panduan, tema
+templates/_ikon.html       ikon SVG bersama
+static/css/, static/js/    gaya dan skrip halaman (tema.css dipakai kedua halaman)
+static/vendor/             Bootstrap 5.3.3 (disertakan, tidak lewat CDN)
 tests/                     uji otomatis (python -m pytest tests)
 database/vector_db.py      koneksi & operasi Qdrant Cloud
 interface/cli.py           antarmuka baris perintah
@@ -120,7 +124,7 @@ Jika salah satunya diubah, jalankan ulang dengan `--recreate`.
 ```bash
 python main.py                  # versi CLI, mode RAG
 python main.py --tanpa-rag      # versi CLI, LLM saja (pembanding)
-flask --app app run --debug     # versi web, buka http://127.0.0.1:5000
+flask --app app run --debug     # versi web: http://127.0.0.1:5000 (landing) dan /tanya (tanya jawab)
 ```
 
 Percakapan bersifat berkelanjutan: pertanyaan lanjutan seperti "cara
@@ -137,7 +141,7 @@ aturan tanpa LLM). Seluruh pertanyaan test set tidak berubah oleh langkah ini
 
 Halaman web punya pilihan **Mode jawaban**: *Dengan RAG* (bawaan) dan *Tanpa RAG*
 (LLM saja, pembanding). Mode tanpa RAG juga bisa dibuka langsung lewat
-`http://127.0.0.1:5000/?mode=llm`. Untuk versi yang dipakai petani, sembunyikan
+`http://127.0.0.1:5000/tanya?mode=llm` (alamat lama `/?mode=llm` otomatis diarahkan ke sana). Untuk versi yang dipakai petani, sembunyikan
 pilihan ini dengan environment variable `TAMPILKAN_MODE=0`.
 
 ### Perbaikan dari masukan responden kuesioner
@@ -149,7 +153,7 @@ pilihan ini dengan environment variable `TAMPILKAN_MODE=0`.
 | Harus bertanya berulang, ingin rekomendasi pertanyaan lanjutan | Setiap jawaban diberi tiga **pertanyaan lanjutan** yang tinggal diketuk (`rag_core/saran.py`). Saran disusun dengan aturan dari nama hama/penyakit dan aspek yang ditanyakan, tanpa memanggil LLM. |
 | Jawaban kurang langsung ke inti | Opsi `GAYA_JAWABAN=langsung` (lihat di bawah). |
 | Perlu panduan untuk pengguna awam | Layar awal berisi tiga langkah bertanya serta daftar yang bisa dan belum bisa ditanyakan. Tombol **Panduan** membuka panduan lengkap, termasuk tips menulis pertanyaan. |
-| Tampilan dan warna kurang modern, kolom perlu dirapikan | Tema baru hijau gelap dan tema terang, huruf Plus Jakarta Sans, tata letak riwayat di samping (laptop) atau laci (HP). |
+| Tampilan dan warna kurang modern, kolom perlu dirapikan | Halaman depan (landing) baru dengan efek cahaya dan animasi ringan. Antarmuka memakai Bootstrap 5.3 (navbar, laci riwayat, dialog panduan, tombol mode), tema hijau gelap dan tema terang, serta huruf Plus Jakarta Sans. |
 
 **Gaya jawaban.** `GAYA_JAWABAN=standar` (bawaan) memakai instruksi sistem yang
 sama dengan saat evaluasi RAGAS, sehingga hasil evaluasi tetap bisa diulang.

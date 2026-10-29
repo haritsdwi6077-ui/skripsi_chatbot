@@ -14,7 +14,7 @@ misalnya saat aplikasi dipakai petani dan bukan untuk demo penelitian.
 import os
 
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 
 from rag_core import config, engine, saran
 
@@ -22,11 +22,21 @@ app = Flask(__name__)
 
 
 TAMPILKAN_MODE = os.environ.get("TAMPILKAN_MODE", "1").strip() != "0"
+ASET_VERSI = "2026-10-29"   # ubah bila CSS/JS di static/ diganti, agar browser memuat versi baru
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 60 * 60 * 24 * 7
 
 
 @app.get("/")
-def index():
-    return render_template("index.html", tampilkan_mode=TAMPILKAN_MODE)
+def landing():
+    # Alamat lama seperti /?mode=llm tetap diarahkan ke halaman tanya jawab
+    if request.args.get("mode") or request.args.get("q"):
+        return redirect(url_for("tanya", **request.args))
+    return render_template("landing.html", versi=ASET_VERSI)
+
+
+@app.get("/tanya")
+def tanya():
+    return render_template("index.html", tampilkan_mode=TAMPILKAN_MODE, versi=ASET_VERSI)
 
 
 @app.get("/api/health")
