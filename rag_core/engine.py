@@ -282,6 +282,24 @@ def retrieve(question: str, top_k: int | None = None) -> list[dict]:
         ) from exc
 
 
+# Aturan tambahan untuk GAYA_JAWABAN=langsung (lihat config.py). Tidak dipakai
+# saat evaluasi, kecuali GAYA_JAWABAN diatur di .env.
+ATURAN_LANGSUNG = (
+    " Kalimat pertama jawaban harus langsung menjawab inti pertanyaan, tanpa "
+    "kalimat pembuka seperti 'Berikut adalah' dan tanpa mengulang pertanyaan. "
+    "Setelah itu baru berikan rincian seperlunya. Kecuali saat informasi tidak "
+    "ditemukan, jangan menutup jawaban dengan tawaran untuk bertanya lagi, karena "
+    "aplikasi sudah menampilkan saran pertanyaan lanjutan."
+)
+
+
+def system_prompt_rag() -> str:
+    """Instruksi sistem mode RAG sesuai GAYA_JAWABAN."""
+    if config.GAYA_JAWABAN == "langsung":
+        return SYSTEM_PROMPT + ATURAN_LANGSUNG
+    return SYSTEM_PROMPT
+
+
 def build_prompt(question: str, contexts: list[dict]) -> str:
     blocks = []
     for i, ctx in enumerate(contexts, start=1):
@@ -323,7 +341,7 @@ def answer(question: str, top_k: int | None = None, model: str | None = None,
         }
     hasil = llm.generate_detail(
         build_prompt(pertanyaan, contexts),
-        system_prompt=SYSTEM_PROMPT,
+        system_prompt=system_prompt_rag(),
         model=model,
     )
     t2 = time.perf_counter()
