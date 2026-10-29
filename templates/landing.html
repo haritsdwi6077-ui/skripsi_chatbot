@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tanya Padi: Asisten Hama &amp; Penyakit Padi</title>
+<meta name="description" content="Tanya jawab gejala, penyebab, dan cara pengendalian hama serta penyakit padi. Jawaban disusun dari 153 dokumen rujukan pertanian dan menunjukkan sumbernya.">
+<meta name="theme-color" content="#121610">
+<script>document.documentElement.classList.add("js")</script>
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-5.3.3/bootstrap.min.css') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tema.css', v=versi) }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css', v=versi) }}">
+</head>
+<body class="landing">
+{% include "_ikon.html" %}
+<a class="visually-hidden-focusable lewati" href="#isi">Lewati ke isi</a>
+
+<nav class="navbar navbar-expand-lg fixed-top nav-kaca" id="navUtama" aria-label="Navigasi utama">
+  <div class="container">
+    <a class="navbar-brand merek" href="{{ url_for('landing') }}"><svg class="bulir" aria-hidden="true"><use href="#bulir"/></svg>Tanya Padi</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuUtama" aria-controls="menuUtama" aria-expanded="false" aria-label="Buka menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="menuUtama">
+      <ul class="navbar-nav mx-lg-auto">
+        <li class="nav-item"><a class="nav-link" href="#kenalan">Tentang</a></li>
+        <li class="nav-item"><a class="nav-link" href="#fitur">Fitur</a></li>
+        <li class="nav-item"><a class="nav-link" href="#cara-kerja">Cara kerja</a></li>
+        <li class="nav-item"><a class="nav-link" href="#cakupan">Cakupan</a></li>
+      </ul>
+      <a class="btn btn-padi btn-nav" href="{{ url_for('tanya') }}">Mulai bertanya</a>
+    </div>
+  </div>
+</nav>
+
+<main id="isi">
+  <!-- Pahlawan: lambang bulir bercahaya dan dua garis cahaya yang bertemu di bawah -->
+  <header class="pahlawan">
+    <div class="debu" aria-hidden="true"></div>
+
+    <div class="container isi-pahlawan">
+      <div class="panggung">
+        <svg class="berkas berkas-besar" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="bKiri" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#8DAE69" stop-opacity="0"/><stop offset=".45" stop-color="#8DAE69"/><stop offset=".85" stop-color="#B8F27C"/><stop offset="1" stop-color="#FFF6DA"/>
+            </linearGradient>
+            <linearGradient id="bKanan" x1="1" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#8DAE69" stop-opacity="0"/><stop offset=".45" stop-color="#8DAE69"/><stop offset=".85" stop-color="#B8F27C"/><stop offset="1" stop-color="#FFF6DA"/>
+            </linearGradient>
+            <filter id="kabur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="10"/></filter>
+          </defs>
+          <g filter="url(#kabur)">
+            <path class="halo" d="M-60 330 C300 430 600 640 720 880" stroke="url(#bKiri)"/>
+            <path class="halo" d="M1500 330 C1140 430 840 640 720 880" stroke="url(#bKanan)"/>
+          </g>
+          <path class="nyala" d="M-60 330 C300 430 600 640 720 880" stroke="url(#bKiri)"/>
+          <path class="nyala" d="M1500 330 C1140 430 840 640 720 880" stroke="url(#bKanan)"/>
+          <path class="inti" d="M-60 330 C300 430 600 640 720 880" stroke="url(#bKiri)"/>
+          <path class="inti" d="M1500 330 C1140 430 840 640 720 880" stroke="url(#bKanan)"/>
+          <path class="denyut" d="M-60 330 C300 430 600 640 720 880"/>
+          <path class="denyut" d="M1500 330 C1140 430 840 640 720 880"/>
+        </svg>
+        <div class="suar" aria-hidden="true"></div>
+      <div class="lambang lambang-besar" aria-hidden="true">
+        <svg viewBox="0 0 120 120">
+          <path d="M58 108 C50 92 40 78 26 60 C40 70 52 80 60 94 Z" fill="url(#gDaun)" opacity=".92"/>
+          <path d="M60 108 C60 84 63 62 74 40" stroke="url(#gDaun)" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M74 40 C82 44 89 52 92 64" stroke="#D2AE5E" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <g class="gabah" fill="url(#gGabah)" stroke="rgba(255,255,255,.55)" stroke-width=".8">
+            <ellipse cx="70" cy="27" rx="4.6" ry="9.5" transform="rotate(-18 70 27)"/>
+            <ellipse cx="80" cy="30" rx="4.6" ry="9.5" transform="rotate(14 80 30)"/>
+            <ellipse cx="88" cy="39" rx="4.4" ry="9" transform="rotate(40 88 39)"/>
+            <ellipse cx="93" cy="51" rx="4.2" ry="8.6" transform="rotate(62 93 51)"/>
+            <ellipse cx="94" cy="64" rx="4" ry="8.2" transform="rotate(84 94 64)"/>
+            <ellipse cx="66" cy="44" rx="4" ry="8.4" transform="rotate(-6 66 44)"/>
+            <ellipse cx="79" cy="47" rx="3.8" ry="8" transform="rotate(34 79 47)"/>
+          </g>
+        </svg>
+      </div>
+      <h1 class="judul-besar">Tanya hama dan penyakit padi, <span class="kilau">dijawab dari dokumen rujukan</span></h1>
+      <p class="lead pengantar">Ceritakan gejala di sawah dengan bahasa sehari-hari. Tanya Padi mencari jawabannya di 153 dokumen pertanian, lalu menunjukkan sumbernya.</p>
+      <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 ajakan">
+        <a class="btn btn-padi btn-lg" href="{{ url_for('tanya') }}">Mulai bertanya</a>
+        <a class="btn btn-ikon btn-lg tautan-putar" href="#cara-kerja"><svg class="ikon" aria-hidden="true"><use href="#i-putar"/></svg>Lihat cara kerja</a>
+      </div>
+      <div class="sumber-strip">
+        <p class="mb-2">Jawaban disusun dari dokumen</p>
+        <ul class="list-unstyled d-flex flex-wrap justify-content-center m-0">
+          <li>Panduan IRRI</li>
+          <li>Buku FAO</li>
+          <li>Direktorat Perlindungan Tanaman Pangan</li>
+          <li>Jurnal ilmiah pertanian</li>
+        </ul>
+      </div>
+      </div>
+      <a class="gulir" href="#kenalan">Gulir untuk melihat<svg class="ikon" aria-hidden="true"><use href="#i-bawah"/></svg></a>
+    </div>
+  </header>
+
+  <!-- Kenalan: angka dari penelitian -->
+  <section id="kenalan" class="bagian">
+    <div class="container">
+      <div class="text-center" data-muncul>
+        <p class="label-hijau">Kenalan dengan Tanya Padi</p>
+        <h2 class="judul-bagian mx-auto">Asisten yang menjawab dari sumber yang jelas.</h2>
+      </div>
+      <div class="row row-cols-1 row-cols-md-3 g-4 text-center angka-baris" data-muncul>
+        <div class="col">
+          <p class="angka"><span data-hitung="153">153</span></p>
+          <p class="angka-ket">dokumen rujukan pertanian</p>
+        </div>
+        <div class="col">
+          <p class="angka"><span data-hitung="8576">8.576</span></p>
+          <p class="angka-ket">potongan teks yang bisa dicari</p>
+        </div>
+        <div class="col">
+          <p class="angka"><span data-hitung="2">2</span>×</p>
+          <p class="angka-ket">skor ketepatan fakta dibanding LLM tanpa dokumen</p>
+        </div>
+      </div>
+      <p class="catatan-kecil text-center" data-muncul>Skor ketepatan fakta (<i>factual correctness</i>) dari evaluasi RAGAS pada 40 pertanyaan uji: 0,465 dengan dokumen rujukan dan 0,229 tanpa dokumen rujukan.</p>
+
+      <div class="row g-0 keunggulan" data-muncul>
+        <div class="col-md-4 kolom-unggul">
+          <svg class="ikon ikon-unggul" aria-hidden="true"><use href="#i-buku"/></svg>
+          <h3>Jawaban bersumber</h3>
+          <p>Setiap jawaban menyebut dokumen asalnya lengkap dengan nomor halaman, jadi mudah diperiksa ulang.</p>
+        </div>
+        <div class="col-md-4 kolom-unggul kolom-sorot">
+          <svg class="ikon ikon-unggul" aria-hidden="true"><use href="#i-obrolan"/></svg>
+          <h3>Paham pertanyaan lanjutan</h3>
+          <p>Tanya "cara pencegahannya?" tanpa menyebut ulang nama hamanya. Pertanyaan berikutnya juga disarankan.</p>
+        </div>
+        <div class="col-md-4 kolom-unggul">
+          <svg class="ikon ikon-unggul" aria-hidden="true"><use href="#i-hp"/></svg>
+          <h3>Gratis, cukup dari HP</h3>
+          <p>Dibuka lewat browser tanpa memasang aplikasi. Riwayat percakapan tersimpan di perangkat Anda.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fitur -->
+  <section id="fitur" class="bagian">
+    <div class="container">
+      <div class="row align-items-end g-4 mb-5" data-muncul>
+        <div class="col-lg-7">
+          <p class="label-hijau">Fitur</p>
+          <h2 class="judul-bagian">Dari gejala sampai cara pengendalian, dalam satu percakapan.</h2>
+        </div>
+        <div class="col-lg-5 text-lg-end">
+          <a class="btn btn-padi" href="{{ url_for('tanya') }}">Coba sekarang</a>
+        </div>
+      </div>
+      <div class="row g-0 pamer" data-muncul>
+        <div class="col-lg-5 pamer-teks">
+          <svg class="ikon ikon-unggul" aria-hidden="true"><use href="#i-saran"/></svg>
+          <h3>Ceritakan yang Anda lihat di sawah</h3>
+          <p>Tulis bagian tanaman yang sakit, warnanya, atau umur padinya. Setelah jawaban muncul, ketuk saran pertanyaan berikutnya, misalnya dari gejala ke cara pengendalian.</p>
+          <ul class="list-unstyled daftar-fitur">
+            <li><svg class="ikon" aria-hidden="true"><use href="#i-ya"/></svg>Riwayat tidak hilang saat halaman dimuat ulang</li>
+            <li><svg class="ikon" aria-hidden="true"><use href="#i-ya"/></svg>Pertanyaan lama bisa dicari dan dibuka lagi</li>
+            <li><svg class="ikon" aria-hidden="true"><use href="#i-ya"/></svg>Huruf bisa diperbesar dan tersedia tema terang</li>
+          </ul>
+          <a class="tautan-panah" href="{{ url_for('tanya') }}">Buka Tanya Padi<svg class="ikon" aria-hidden="true"><use href="#i-kanan"/></svg></a>
+        </div>
+        <div class="col-lg-7">
+          <div class="kartu-demo">
+            <svg class="berkas berkas-demo" viewBox="0 0 700 420" preserveAspectRatio="none" aria-hidden="true">
+              <path class="halo" d="M-20 150 C180 210 300 300 350 420" stroke="url(#bKiri)" filter="url(#kabur)"/>
+              <path class="halo" d="M720 150 C520 210 400 300 350 420" stroke="url(#bKanan)" filter="url(#kabur)"/>
+              <path class="nyala" d="M-20 150 C180 210 300 300 350 420" stroke="url(#bKiri)"/>
+              <path class="nyala" d="M720 150 C520 210 400 300 350 420" stroke="url(#bKanan)"/>
+              <path class="inti" d="M-20 150 C180 210 300 300 350 420" stroke="url(#bKiri)"/>
+              <path class="inti" d="M720 150 C520 210 400 300 350 420" stroke="url(#bKanan)"/>
+            </svg>
+            <div class="kotak-demo">
+              <p class="mb-0">Apa yang ingin Anda tanyakan?</p>
+              <span class="tombol-demo" aria-hidden="true"><svg class="ikon"><use href="#i-kirim"/></svg></span>
+            </div>
+            <p class="contoh-label">Coba ketuk salah satu</p>
+            <div class="d-grid gap-2 contoh-demo">
+              <a class="chip" href="{{ url_for('tanya', q='Apa gejala penyakit blas pada daun padi?') }}">Apa gejala penyakit blas pada daun padi?</a>
+              <a class="chip" href="{{ url_for('tanya', q='Bagaimana cara mengendalikan wereng batang cokelat?') }}">Bagaimana cara mengendalikan wereng batang cokelat?</a>
+              <a class="chip" href="{{ url_for('tanya', q='Daun padi menguning oranye dan tanaman kerdil, apakah itu tungro?') }}">Daun padi menguning oranye dan kerdil, apakah itu tungro?</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cara kerja: urutan nyata di balik setiap jawaban -->
+  <section id="cara-kerja" class="bagian">
+    <div class="container">
+      <div class="text-center" data-muncul>
+        <p class="label-hijau">Cara kerja</p>
+        <h2 class="judul-bagian mx-auto">Empat langkah di balik setiap jawaban.</h2>
+      </div>
+      <ol class="alur row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 list-unstyled" data-muncul>
+        <li class="col"><div class="langkah-alur"><h3>Anda bertanya</h3><p>Pakai bahasa sehari-hari. Pertanyaan yang terpotong atau pertanyaan lanjutan dilengkapi lebih dulu.</p></div></li>
+        <li class="col"><div class="langkah-alur"><h3>Sistem mencari</h3><p>Pertanyaan diubah menjadi vektor lalu dicocokkan dengan 8.576 potongan dokumen di Qdrant.</p></div></li>
+        <li class="col"><div class="langkah-alur"><h3>Jawaban disusun</h3><p>Model bahasa merangkum potongan yang paling relevan tanpa menambah informasi dari luar dokumen.</p></div></li>
+        <li class="col"><div class="langkah-alur"><h3>Sumber ditampilkan</h3><p>Angka kecil di jawaban menunjuk dokumen dan halaman asal informasinya.</p></div></li>
+      </ol>
+      <p class="catatan-kecil text-center" data-muncul>Pendekatan ini disebut <i>Retrieval Augmented Generation</i> (RAG).</p>
+    </div>
+  </section>
+
+  <!-- Cakupan -->
+  <section id="cakupan" class="bagian">
+    <div class="container">
+      <div class="text-center" data-muncul>
+        <p class="label-hijau">Cakupan</p>
+        <h2 class="judul-bagian mx-auto">Khusus untuk hama dan penyakit tanaman padi.</h2>
+      </div>
+      <div class="row g-3 justify-content-center" data-muncul>
+        <div class="col-md-6 col-lg-5">
+          <div class="kartu-cakupan ya h-100">
+            <h3><svg class="ikon" aria-hidden="true"><use href="#i-ya"/></svg>Bisa ditanyakan</h3>
+            <ul><li>Gejala dan penyebab penyakit padi</li><li>Hama padi dan cara mengendalikannya</li><li>Pencegahan, musuh alami, dan PHT</li></ul>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-5">
+          <div class="kartu-cakupan tidak h-100">
+            <h3><svg class="ikon" aria-hidden="true"><use href="#i-tidak"/></svg>Belum bisa ditanyakan</h3>
+            <ul><li>Tanaman lain seperti jagung atau cabai</li><li>Harga pupuk atau pestisida</li><li>Diagnosis dari foto tanaman</li></ul>
+          </div>
+        </div>
+      </div>
+      <p class="catatan-kecil text-center" data-muncul>Jawaban adalah bahan pertimbangan, bukan pengganti penyuluh. Bila serangan meluas, hubungi penyuluh pertanian atau petugas POPT setempat.</p>
+    </div>
+  </section>
+
+  <!-- Ajakan akhir -->
+  <section class="ajakan-akhir">
+    <div class="container text-center" data-muncul>
+      <div class="lambang lambang-kecil" aria-hidden="true"><svg><use href="#bulir"/></svg></div>
+      <h2 class="judul-bagian mx-auto">Ada yang ingin ditanyakan tentang padi Anda?</h2>
+      <a class="btn btn-padi btn-lg mt-3" href="{{ url_for('tanya') }}">Mulai bertanya</a>
+    </div>
+  </section>
+</main>
+
+<footer class="kaki-landing">
+  <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+    <a class="merek" href="{{ url_for('landing') }}"><svg class="bulir" aria-hidden="true"><use href="#bulir"/></svg>Tanya Padi</a>
+    <p class="m-0">Dibuat sebagai bagian dari penelitian skripsi tentang sistem tanya jawab berbasis RAG.</p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='vendor/bootstrap-5.3.3/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/landing.js', v=versi) }}"></script>
+</body>
+</html>
