@@ -34,8 +34,7 @@ body.halaman-tanya { height: 100%; overflow: hidden; margin: 0; }
 .grup-riwayat:first-child h3 { margin-top: 2px; }
 .item-riwayat { display: flex; align-items: stretch; border-radius: 16px; border: 1px solid transparent; }
 .item-riwayat:hover { background: var(--permukaan); }
-.item-riwayat[aria-current="true"] { background: var(--permukaan); border-color: var(--garis-kuat); box-shadow: inset 3px 0 0 var(--lime); }
-:root[data-bs-theme="light"] .item-riwayat[aria-current="true"] { box-shadow: inset 3px 0 0 #4E7A1E; }
+.item-riwayat[aria-current="true"] { background: var(--permukaan); border-color: var(--garis-kuat); }
 .buka-item { flex: 1; min-width: 0; text-align: left; background: none; border: 0; cursor: pointer; padding: 9px 4px 9px 12px; border-radius: 16px; color: var(--teks); }
 .buka-item strong { display: block; font-weight: 500; font-size: .92rem; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .buka-item small { display: block; font-size: .78rem; color: var(--teks-samar); }
