@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 
 TAMPILKAN_MODE = os.environ.get("TAMPILKAN_MODE", "1").strip() != "0"
-ASET_VERSI = "2026-10-29"   # ubah bila CSS/JS di static/ diganti, agar browser memuat versi baru
+ASET_VERSI = "2026-11-05b"   # ubah bila CSS/JS di static/ diganti, agar browser memuat versi baru
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 60 * 60 * 24 * 7
 
 

@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tanya Padi: Hama &amp; Penyakit</title>
 <meta name="description" content="Tanya jawab seputar gejala, penyebab, dan cara pengendalian hama serta penyakit tanaman padi, disusun dari dokumen rujukan pertanian.">
-<meta name="theme-color" content="#121610">
+<meta name="theme-color" content="#0D1A17">
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/logo.svg') }}">
 <script>
   // Tema dan ukuran huruf dipasang sebelum halaman tampil, agar tidak berkedip
   try {
@@ -20,7 +21,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-5.3.3/bootstrap.min.css') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter+Tight:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/tema.css', v=versi) }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css', v=versi) }}">
 </head>
@@ -35,7 +36,7 @@
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#samping" aria-label="Tutup riwayat"></button>
     </div>
     <div class="offcanvas-body">
-      <a class="merek d-none d-lg-inline-flex" href="{{ url_for('landing') }}"><svg class="bulir" aria-hidden="true"><use href="#bulir"/></svg>Tanya Padi</a>
+      <a class="merek d-none d-lg-inline-flex" href="{{ url_for('landing') }}"><span class="tanda" aria-hidden="true"><svg class="logo"><use href="#logo"/></svg></span>Tanya Padi</a>
       <button class="btn btn-garis w-100" id="tombolBaru" type="button"><svg class="ikon" aria-hidden="true"><use href="#i-baru"/></svg>Percakapan baru</button>
       <div class="cari">
         <svg class="ikon" aria-hidden="true"><use href="#i-cari"/></svg>
@@ -54,7 +55,7 @@
       <button class="btn btn-ikon d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#samping" aria-controls="samping" aria-label="Buka riwayat percakapan">
         <svg class="ikon" aria-hidden="true"><use href="#i-riwayat"/></svg><span class="d-none d-sm-inline" aria-hidden="true">Riwayat</span>
       </button>
-      <a class="merek d-lg-none" href="{{ url_for('landing') }}"><svg class="bulir" aria-hidden="true"><use href="#bulir"/></svg>Tanya Padi</a>
+      <a class="merek d-lg-none" href="{{ url_for('landing') }}"><span class="tanda" aria-hidden="true"><svg class="logo"><use href="#logo"/></svg></span>Tanya Padi</a>
       <span class="flex-grow-1" aria-hidden="true"></span>
       <button class="btn btn-ikon" id="tombolHuruf" type="button" aria-pressed="false" aria-label="Perbesar huruf"><span aria-hidden="true">A+</span></button>
       <button class="btn btn-ikon" id="tombolTema" type="button" aria-label="Ganti ke tema terang"><svg class="ikon" aria-hidden="true"><use href="#i-matahari"/></svg></button>
@@ -64,28 +65,9 @@
     <main class="isi" id="isi">
       <section class="sambutan" id="sambutan" aria-labelledby="judulSambutan">
         <div class="pahlawan-kecil">
-          <svg class="berkas berkas-kecil" viewBox="0 0 1000 520" preserveAspectRatio="none" aria-hidden="true">
-            <defs>
-              <linearGradient id="cKiri" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#8DAE69" stop-opacity="0"/><stop offset=".5" stop-color="#8DAE69"/><stop offset=".9" stop-color="#B8F27C"/><stop offset="1" stop-color="#FFF6DA"/>
-              </linearGradient>
-              <linearGradient id="cKanan" x1="1" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#8DAE69" stop-opacity="0"/><stop offset=".5" stop-color="#8DAE69"/><stop offset=".9" stop-color="#B8F27C"/><stop offset="1" stop-color="#FFF6DA"/>
-              </linearGradient>
-              <filter id="kaburKecil" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="8"/></filter>
-            </defs>
-            <g filter="url(#kaburKecil)">
-              <path class="halo" d="M-20 170 C260 250 420 350 500 480" stroke="url(#cKiri)"/>
-              <path class="halo" d="M1020 170 C740 250 580 350 500 480" stroke="url(#cKanan)"/>
-            </g>
-            <path class="nyala" d="M-20 170 C260 250 420 350 500 480" stroke="url(#cKiri)"/>
-            <path class="nyala" d="M1020 170 C740 250 580 350 500 480" stroke="url(#cKanan)"/>
-            <path class="inti" d="M-20 170 C260 250 420 350 500 480" stroke="url(#cKiri)"/>
-            <path class="inti" d="M1020 170 C740 250 580 350 500 480" stroke="url(#cKanan)"/>
-          </svg>
           <div class="kolom text-center">
-            <div class="lambang lambang-sambut" aria-hidden="true"><svg><use href="#bulir"/></svg></div>
-            <h1 id="judulSambutan">Ada masalah hama atau penyakit di sawah?</h1>
+            <p class="label-hijau"><span class="tanda" aria-hidden="true"><svg class="logo"><use href="#logo"/></svg></span>Asisten hama dan penyakit padi</p>
+            <h1 id="judulSambutan">Ada masalah hama atau penyakit <span class="lime">di sawah?</span></h1>
             <p class="lede">Ceritakan gejala yang Anda lihat pada tanaman padi. Tanya Padi mencari jawabannya di buku dan dokumen pertanian, lalu menunjukkan sumbernya.</p>
             <div class="d-flex flex-wrap justify-content-center gap-2 gap-sm-3 ajakan">
               <button class="btn btn-padi" type="button" id="mulaiBertanya">Mulai bertanya</button>
@@ -165,7 +147,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg modal-fullscreen-sm-down">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title" id="judulPanduan">Panduan Tanya Padi</h2>
+        <h2 class="modal-title" id="judulPanduan"><span class="tanda" aria-hidden="true"><svg class="logo"><use href="#logo"/></svg></span>Panduan Tanya Padi</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup panduan"></button>
       </div>
       <div class="modal-body">

@@ -151,7 +151,7 @@ function buatPesan(p, terakhir) {
   const d = p.data || {};
   const modeJawab = d.mode === 'llm' ? 'llm' : 'rag';
   el.className = 'pesan sistem';
-  let html = '<div class="kepala-jawaban"><svg class="bulir" aria-hidden="true"><use href="#bulir"/></svg><b>Tanya Padi</b>';
+  let html = '<div class="kepala-jawaban"><span class="tanda" aria-hidden="true"><svg class="logo"><use href="#logo"/></svg></span><b>Tanya Padi</b>';
   if (TAMPILKAN_MODE) html += '<span class="lencana-mode ' + modeJawab + '">' + NAMA_MODE[modeJawab] + '</span>';
   html += '</div>';
   const tafsir = (d.standalone_question || '').trim();
@@ -431,7 +431,7 @@ function aturTema(t) {
   tombolTema.querySelector('use').setAttribute('href', t === 'gelap' ? '#i-matahari' : '#i-bulan');
   tombolTema.setAttribute('aria-label', t === 'gelap' ? 'Ganti ke tema terang' : 'Ganti ke tema gelap');
   tombolTema.title = tombolTema.getAttribute('aria-label');
-  document.querySelector('meta[name="theme-color"]').content = t === 'gelap' ? '#121610' : '#F4EEDF';
+  document.querySelector('meta[name="theme-color"]').content = t === 'gelap' ? '#0D1A17' : '#F1F4EA';
 }
 aturTema(document.documentElement.dataset.tema === 'terang' ? 'terang' : 'gelap');
 tombolTema.addEventListener('click', () => {
