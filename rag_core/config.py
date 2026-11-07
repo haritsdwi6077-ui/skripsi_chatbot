@@ -35,7 +35,7 @@ QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY", "")
 QDRANT_COLLECTION = os.environ.get("QDRANT_COLLECTION", "skripsi_knowledge_base")
 
 # --- Parameter retrieval ---
-TOP_K = int(os.environ.get("TOP_K", "4"))
+TOP_K = int(os.environ.get("TOP_K", "6"))
 # Pertanyaan bertipe daftar ("apa saja", "sebutkan", "jenis-jenis") butuh lebih
 # banyak potongan agar beberapa hama/penyakit bisa muncul. 0 = sama dengan TOP_K.
 TOP_K_DAFTAR = int(os.environ.get("TOP_K_DAFTAR", "8"))
@@ -44,7 +44,7 @@ TOP_K_DAFTAR = int(os.environ.get("TOP_K_DAFTAR", "8"))
 # potongan dari dokumen yang sama. MMR_LAMBDA: 1 = murni relevansi, 0 = murni keragaman.
 MMR_AKTIF = os.environ.get("MMR_AKTIF", "1").strip() != "0"
 RETRIEVAL_KANDIDAT = int(os.environ.get("RETRIEVAL_KANDIDAT", "40"))
-MMR_LAMBDA = float(os.environ.get("MMR_LAMBDA", "0.6"))
+MMR_LAMBDA = float(os.environ.get("MMR_LAMBDA", "0.75"))
 MAKS_PER_SUMBER = int(os.environ.get("MAKS_PER_SUMBER", "2"))
 # Keragaman topik: topik = nama subfolder di data_source (Blas, HDB, Tungro, ...).
 # Kandidat dengan skor dalam JENDELA_SKOR dari skor tertinggi dianggap sama
