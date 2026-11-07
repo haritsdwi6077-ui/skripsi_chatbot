@@ -151,16 +151,13 @@ pilihan ini dengan environment variable `TAMPILKAN_MODE=0`.
 | Riwayat hilang saat halaman dimuat ulang | Percakapan tersimpan otomatis di browser (`localStorage`) dan dibuka lagi saat halaman dimuat ulang. Draf pertanyaan yang belum dikirim juga tersimpan. |
 | Ingin melihat pertanyaan lama ("laman lama") | Panel **Riwayat** berisi percakapan lama yang dikelompokkan per hari, bisa dicari, dibuka lagi, atau dihapus. Riwayat tidak dikirim ke server. |
 | Harus bertanya berulang, ingin rekomendasi pertanyaan lanjutan | Setiap jawaban diberi tiga **pertanyaan lanjutan** yang tinggal diketuk (`rag_core/saran.py`). Saran disusun dengan aturan dari nama hama/penyakit dan aspek yang ditanyakan, tanpa memanggil LLM. |
-| Jawaban kurang langsung ke inti | Opsi `GAYA_JAWABAN=langsung` (lihat di bawah). |
+ | Jawaban kurang langsung ke inti | Pertanyaan pertama yang terpotong, seperti "PADI ADALAH", dilengkapi menjadi kalimat tanya sebelum pencarian dokumen, dan tafsirannya ditampilkan di atas jawaban. |
 | Perlu panduan untuk pengguna awam | Layar awal berisi tiga langkah bertanya serta daftar yang bisa dan belum bisa ditanyakan. Tombol **Panduan** membuka panduan lengkap, termasuk tips menulis pertanyaan. |
 | Tampilan dan warna kurang modern, kolom perlu dirapikan | Halaman depan (landing) baru dengan efek cahaya dan animasi ringan. Antarmuka memakai Bootstrap 5.3 (navbar, laci riwayat, dialog panduan, tombol mode), tema hijau gelap dan tema terang, serta huruf Plus Jakarta Sans. |
 
-**Gaya jawaban.** `GAYA_JAWABAN=standar` (bawaan) memakai instruksi sistem yang
-sama dengan saat evaluasi RAGAS, sehingga hasil evaluasi tetap bisa diulang.
-`GAYA_JAWABAN=langsung` menambahkan aturan agar kalimat pertama langsung menjawab
-inti pertanyaan. Aktifkan di aplikasi web lewat Environment Variables Vercel. Bila
-gaya ini juga dipakai saat evaluasi, skor RAGAS perlu dihitung ulang karena
-jawabannya berubah.
+   **Gaya jawaban.** Aplikasi memakai `GAYA_JAWABAN=standar` (bawaan), yaitu instruksi
+   sistem yang sama dengan saat evaluasi RAGAS. Kode juga menyediakan pilihan
+   `GAYA_JAWABAN=langsung`, tetapi pilihan ini tidak diaktifkan dan tidak dievaluasi.
 
 ## Deploy ke Vercel
 
