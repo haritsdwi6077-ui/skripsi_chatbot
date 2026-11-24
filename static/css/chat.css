@@ -147,7 +147,8 @@ body.halaman-tanya { height: 100%; overflow: hidden; margin: 0; }
 .daftar-sumber { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
 .daftar-sumber li { display: flex; gap: 8px; align-items: baseline; }
 .daftar-sumber .rujuk { margin: 0; flex: none; }
-.daftar-sumber span + span { min-width: 0; }
+.daftar-sumber span + span { min-width: 0; overflow-wrap: anywhere; }
+.daftar-sumber a { color: var(--tautan); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .kaki-baris { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
 .aksi-kecil { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 4px 0; color: var(--tautan); cursor: pointer; font-size: .88rem; font-weight: 600; }
 .aksi-kecil .ikon { width: 17px; height: 17px; }

@@ -8,6 +8,7 @@ dan agar model LLM mudah diganti untuk kebutuhan perbandingan antar-LLM.
 import json
 import re
 import time
+from collections import OrderedDict
 
 from rag_core import config, embeddings, llm, saran
 from rag_core.pertanyaan import lengkapi_pertanyaan
@@ -450,10 +451,13 @@ SYSTEM_PROMPT_PAHAMI = (
     "jangan menjawab pertanyaannya.\n"
     "3. Untuk jenis \"pertanyaan\", tentukan juga aspek yang ditanyakan, pilih "
     "SATU: pengertian, gejala, penyebab, pengendalian, pencegahan, musuh_alami, "
-    "atau lainnya. Obat, cara membasmi, atau cara mengatasi termasuk "
-    "pengendalian. Ciri atau tanda serangan termasuk gejala. Pertanyaan yang "
-    "meminta daftar, membandingkan, atau menceritakan gejala tanpa nama hama "
-    "atau penyakit termasuk lainnya.\n"
+    "daftar_penyakit, daftar_hama, daftar_hama_penyakit, atau lainnya. Obat, "
+    "cara membasmi, atau cara mengatasi termasuk pengendalian. Ciri atau tanda "
+    "serangan termasuk gejala. Pertanyaan tentang penyakit apa saja yang ada "
+    "pada padi termasuk daftar_penyakit, hama apa saja termasuk daftar_hama, "
+    "dan hama serta penyakit atau masalah padi secara umum termasuk "
+    "daftar_hama_penyakit. Pertanyaan yang membandingkan atau menceritakan "
+    "gejala tanpa nama hama atau penyakit termasuk lainnya.\n"
     "4. Isi \"topik\" dengan nama hama atau penyakit padi yang dimaksud, persis "
     "seperti yang disebut atau dirujuk pengguna. Kosongkan bila tidak ada.\n\n"
     "Balas hanya dengan JSON satu baris, tanpa teks lain: "
@@ -481,6 +485,15 @@ KUERI_BAKU = {
 }
 
 
+# Pertanyaan daftar ("apa penyakit pada padi", "penyakit padi apa aja") tidak
+# menyebut satu nama, jadi memakai kalimat pencarian baku tersendiri.
+KUERI_DAFTAR = {
+    "daftar_penyakit": "Apa saja penyakit yang menyerang tanaman padi?",
+    "daftar_hama": "Apa saja hama yang menyerang tanaman padi?",
+    "daftar_hama_penyakit": "Apa saja hama dan penyakit yang menyerang tanaman padi?",
+}
+
+
 def kueri_baku(aspek: str, topik: str, kueri: str) -> str:
     """Kalimat pencarian baku bila aspek dan tepat satu hama/penyakit dikenali.
 
@@ -489,7 +502,10 @@ def kueri_baku(aspek: str, topik: str, kueri: str) -> str:
     "wereng batang cokelat". Bila tidak bisa dibakukan (aspek lainnya, nama
     tidak dikenali, atau lebih dari satu nama), kueri dari LLM dipakai apa adanya.
     """
-    pola = KUERI_BAKU.get((aspek or "").strip().lower())
+    aspek = (aspek or "").strip().lower()
+    if aspek in KUERI_DAFTAR:
+        return KUERI_DAFTAR[aspek]
+    pola = KUERI_BAKU.get(aspek)
     if not pola:
         return kueri
     dikenali = saran.cari_topik(topik) or saran.cari_topik(kueri)
@@ -564,6 +580,48 @@ def _baca_json(teks: str) -> dict | None:
     return data if isinstance(data, dict) else None
 
 
+def adalah_kueri_baku(kueri: str) -> bool:
+    """True bila kueri adalah salah satu kalimat pencarian baku (KUERI_BAKU/DAFTAR)."""
+    if kueri in KUERI_DAFTAR.values():
+        return True
+    for nama, jenis, _ in saran.TOPIK:
+        for pola in KUERI_BAKU.values():
+            templat = pola.get(jenis)
+            if templat and templat.format(nama=nama) == kueri:
+                return True
+    return False
+
+
+# Penyimpanan jawaban untuk kueri baku (di memori server). Pertanyaan yang
+# maknanya sama mendapat jawaban yang PERSIS sama, termasuk nomor rujukannya,
+# selama server masih menyala. Diatur dengan CACHE_JAWABAN_DETIK (0 = mati).
+_CACHE_JAWABAN: "OrderedDict[tuple, tuple[float, dict]]" = OrderedDict()
+MAKS_CACHE_JAWABAN = 256
+
+
+def _ambil_cache(kunci: tuple) -> dict | None:
+    if config.CACHE_JAWABAN_DETIK <= 0:
+        return None
+    isi = _CACHE_JAWABAN.get(kunci)
+    if not isi:
+        return None
+    waktu, data = isi
+    if time.time() - waktu > config.CACHE_JAWABAN_DETIK:
+        _CACHE_JAWABAN.pop(kunci, None)
+        return None
+    _CACHE_JAWABAN.move_to_end(kunci)
+    return data
+
+
+def _simpan_cache(kunci: tuple, data: dict) -> None:
+    if config.CACHE_JAWABAN_DETIK <= 0:
+        return
+    _CACHE_JAWABAN[kunci] = (time.time(), data)
+    _CACHE_JAWABAN.move_to_end(kunci)
+    while len(_CACHE_JAWABAN) > MAKS_CACHE_JAWABAN:
+        _CACHE_JAWABAN.popitem(last=False)
+
+
 def pahami_pertanyaan(question: str, riwayat: list[dict],
                       model: str | None = None) -> tuple[str, str, float]:
     """Memahami satu pesan pengguna sebelum retrieval.
@@ -590,6 +648,7 @@ def pahami_pertanyaan(question: str, riwayat: list[dict],
             model=model,
             temperature=0,
             reasoning_effort="low" if config.LLM_REASONING_EFFORT else "",
+            seed=config.LLM_SEED,
         )
     except Exception:  # noqa: BLE001
         return cadangan()
@@ -628,8 +687,14 @@ def answer_percakapan(question: str, top_k: int | None = None, model: str | None
     """Jalur aplikasi web: pahami pesan, lalu jawab seperti asisten AI pada umumnya.
 
     Struktur hasil sama dengan answer(), ditambah kunci "jenis"
-    ("pertanyaan" atau "sapaan"). Riwayat percakapan ikut dikirim ke LLM agar
-    jawaban nyambung dengan obrolan sebelumnya.
+    ("pertanyaan" atau "sapaan") dan "dari_cache".
+
+    Bila pesan dipahami sebagai kueri baku (misalnya "apa penyakit pada padi"
+    atau "wereng coklat gmn ngatasinya"), jawaban disusun HANYA dari kueri baku
+    itu: tanpa riwayat obrolan dan tanpa kata-kata asli pengguna, lalu disimpan.
+    Dengan begitu pertanyaan yang maknanya sama mendapat jawaban dan rujukan yang
+    sama. Pertanyaan lain (cerita gejala, perbandingan, lanjutan yang tidak
+    baku) tetap dijawab dengan riwayat agar obrolannya nyambung.
     """
     t0 = time.perf_counter()
     riwayat = rapikan_riwayat(riwayat)
@@ -650,6 +715,21 @@ def answer_percakapan(question: str, top_k: int | None = None, model: str | None
             "usage": _usage(hasil),
         }
 
+    baku = adalah_kueri_baku(kueri)
+    kunci = (kueri, model or config.LLM_MODEL, top_k)
+    if baku:
+        simpanan = _ambil_cache(kunci)
+        if simpanan:
+            return {
+                **simpanan,
+                "contexts": list(simpanan["contexts"]),
+                "pertanyaan_mandiri": kueri,
+                "jenis": "pertanyaan",
+                "dari_cache": True,
+                "timing": {"rewrite_s": rewrite_s, "retrieval_s": 0.0, "generation_s": 0.0,
+                           "total_s": round(time.perf_counter() - t0, 3)},
+            }
+
     t_awal = time.perf_counter()
     contexts = retrieve(kueri, top_k=top_k)
     t1 = time.perf_counter()
@@ -664,26 +744,35 @@ def answer_percakapan(question: str, top_k: int | None = None, model: str | None
             "usage": {},
         }
     hasil = llm.generate_detail(
-        build_prompt_percakapan(question, kueri, contexts),
+        # Kueri baku: hanya kueri itu yang dikirim, agar jawaban tidak bergantung
+        # pada susunan kata pengguna maupun jawaban sebelumnya
+        build_prompt_percakapan(kueri if baku else question, kueri, contexts),
         system_prompt=SYSTEM_PROMPT_PERCAKAPAN,
         model=model,
-        riwayat=riwayat,
-        # Temperature rendah agar pertanyaan yang sama maknanya dijawab konsisten
+        riwayat=[] if baku else riwayat,
+        # Temperature rendah dan seed tetap agar jawaban konsisten
         temperature=config.LLM_TEMPERATURE_PERCAKAPAN,
+        seed=config.LLM_SEED,
     )
     t2 = time.perf_counter()
-    return {
+    jawaban = {
         "answer": rapikan_sitasi(hasil["text"]),
         "contexts": contexts,
+        "usage": _usage(hasil),
+    }
+    if baku:
+        _simpan_cache(kunci, jawaban)
+    return {
+        **jawaban,
         "pertanyaan_mandiri": kueri,
         "jenis": "pertanyaan",
+        "dari_cache": False,
         "timing": {
             "rewrite_s": rewrite_s,
             "retrieval_s": round(t1 - t_awal, 3),
             "generation_s": hasil["latency_s"],
             "total_s": round(t2 - t0, 3),
         },
-        "usage": _usage(hasil),
     }
 
 
@@ -718,6 +807,20 @@ def sumber_dikutip(answer: str, contexts: list[dict]) -> list[str]:
             if n.strip().isdigit():
                 nomor.add(int(n))
     return [f"[{i}] {_label_sumber(contexts[i - 1])}"
+            for i in sorted(nomor) if 1 <= i <= len(contexts)]
+
+
+def sumber_dikutip_rinci(answer: str, contexts: list[dict]) -> list[dict]:
+    """Seperti sumber_dikutip(), tetapi berisi judul, halaman, dan tautan yang
+    bisa diklik untuk halaman web (lihat rag_core/sumber.py)."""
+    from rag_core import sumber  # impor lokal agar evaluasi tidak bergantung pada modul ini
+
+    nomor = set()
+    for daftar, tunggal in POLA_RUJUKAN.findall(answer or ""):
+        for n in (daftar.split(",") if daftar else [tunggal]):
+            if n.strip().isdigit():
+                nomor.add(int(n))
+    return [sumber.rincian(i, contexts[i - 1])
             for i in sorted(nomor) if 1 <= i <= len(contexts)]
 
 

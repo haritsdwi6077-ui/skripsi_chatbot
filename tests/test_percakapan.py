@@ -131,3 +131,42 @@ def test_jalur_evaluasi_tidak_berubah(monkeypatch):
     engine.answer("Apa gejala penyakit blas?")
     assert dicari == ["Apa gejala penyakit blas?"]
     assert len(panggilan) == 1 and panggilan[0]["system"] == engine.system_prompt_rag()
+
+
+def test_pertanyaan_daftar_dijawab_sama_walau_kalimat_dan_riwayat_berbeda(monkeypatch):
+    """Masalah setelah revisi 2: "apa penyakit pada padi" menghasilkan rujukan dan
+    susunan jawaban yang berbeda dari pertanyaan sebelumnya yang maknanya sama."""
+    engine._CACHE_JAWABAN.clear()
+    tafsiran_llm = {
+        "penyakit padi apa aja": '{"jenis":"pertanyaan","aspek":"daftar_penyakit","topik":"","kueri":"Penyakit apa saja pada padi?"}',
+        "apa penyakit pada padi": '{"jenis":"pertanyaan","aspek":"daftar_penyakit","topik":"","kueri":"Apa saja penyakit yang menyerang padi?"}',
+    }
+    dicari, dijawab = [], []
+    nomor = iter(["Blas [1][3][6].", "Blas [1][4]."])   # LLM tiruan yang tidak konsisten
+
+    def generate_detail(prompt, system_prompt="", **kw):
+        if system_prompt == engine.SYSTEM_PROMPT_PAHAMI:
+            return _hasil(tafsiran_llm[prompt.rsplit("Pesan pengguna: ", 1)[1]])
+        dijawab.append(kw)
+        return _hasil(next(nomor))
+
+    monkeypatch.setattr(engine.llm, "generate_detail", generate_detail)
+    monkeypatch.setattr(engine, "retrieve", lambda q, top_k=None: dicari.append(q) or
+                        [{"source": "Blas/a.pdf", "page": 1, "text": "..."}] * 6)
+    a = engine.answer("penyakit padi apa aja", percakapan=True)
+    b = engine.answer("apa penyakit pada padi", percakapan=True,
+                      riwayat=[{"question": "penyakit padi apa aja", "answer": a["answer"]}])
+    assert dicari == ["Apa saja penyakit yang menyerang tanaman padi?"]   # dicari sekali saja
+    assert dijawab[0]["riwayat"] == [] and dijawab[0]["seed"] == engine.config.LLM_SEED
+    assert b["answer"] == a["answer"] and b["dari_cache"] is True
+    engine._CACHE_JAWABAN.clear()
+
+
+def test_kueri_bebas_tidak_disimpan(monkeypatch):
+    engine._CACHE_JAWABAN.clear()
+    _pasang(monkeypatch, {
+        engine.SYSTEM_PROMPT_PAHAMI: '{"jenis":"pertanyaan","aspek":"lainnya","topik":"","kueri":"Apa penyebab daun padi menguning?"}',
+        engine.SYSTEM_PROMPT_PERCAKAPAN: "Kemungkinan tungro [1].",
+    })
+    hasil = engine.answer("daun pd kuning knp", percakapan=True)
+    assert hasil["dari_cache"] is False and not engine._CACHE_JAWABAN

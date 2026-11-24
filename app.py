@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 
 TAMPILKAN_MODE = os.environ.get("TAMPILKAN_MODE", "1").strip() != "0"
-ASET_VERSI = "2026-11-24a"   # ubah bila CSS/JS di static/ diganti, agar browser memuat versi baru
+ASET_VERSI = "2026-11-24b"   # ubah bila CSS/JS di static/ diganti, agar browser memuat versi baru
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 60 * 60 * 24 * 7
 
 
@@ -91,6 +91,8 @@ def chat():
             "answer": hasil["answer"],
             "mode": mode,
             "sources": engine.sumber_dikutip(hasil["answer"], hasil["contexts"]),
+            # Judul, halaman, dan tautan yang bisa diklik; lihat rag_core/sumber.py
+            "sources_detail": engine.sumber_dikutip_rinci(hasil["answer"], hasil["contexts"]),
             "standalone_question": tafsiran,
             "timing": hasil.get("timing", {}),
             "suggestions": usulan,

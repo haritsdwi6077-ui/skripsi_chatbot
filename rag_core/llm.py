@@ -24,6 +24,7 @@ def generate_detail(
     temperature: float | None = None,
     reasoning_effort: str | None = None,
     riwayat: list[dict] | None = None,
+    seed: int | None = None,
 ) -> dict:
     """Kirim prompt ke LLM; kembalikan jawaban beserta waktu dan pemakaian token.
 
@@ -56,6 +57,9 @@ def generate_detail(
     }
     if reasoning_effort:
         body["reasoning_effort"] = reasoning_effort
+    # seed hanya dikirim bila diminta (aplikasi web); evaluasi tidak memakainya
+    if seed is not None:
+        body["seed"] = seed
     if config.LLM_MAX_TOKENS > 0:
         body["max_tokens"] = config.LLM_MAX_TOKENS
 

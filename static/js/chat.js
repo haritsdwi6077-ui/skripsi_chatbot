@@ -98,6 +98,9 @@ function rapikan(teks) {
   return html || '<p></p>';
 }
 
+// ---------- Tautan sumber: hanya alamat http(s) ----------
+function amanTautan(url) { return typeof url === 'string' && /^https?:\/\//i.test(url); }
+
 // ---------- Chip (dipakai saran lanjutan bila TAMPILKAN_SARAN=1) ----------
 function buatChip(teks) {
   const b = document.createElement('button');
@@ -134,10 +137,22 @@ function buatPesan(p, terakhir) {
   if (tafsir && tafsir !== (p.tanya || '').trim()) html += '<p class="tafsir">Ditafsirkan sebagai: <span>' + escapeHtml(tafsir) + '</span></p>';
   html += '<div class="isi-jawaban">' + rapikan(d.answer || '') + '</div>';
   const sumber = d.sources || [];
+  const rinci = (d.sources_detail || []).filter((s) => s && s.nomor);
   const detik = d.timing && typeof d.timing.total_s === 'number' ? d.timing.total_s : null;
   html += '<div class="kaki">';
-  if (sumber.length) {
-    // Hanya sumber yang dikutip di jawaban; nomornya sama dengan lencana di jawaban
+  if (rinci.length) {
+    // Sumber yang dikutip, dengan judul dan tautan ke dokumen aslinya (halaman yang dikutip)
+    html += '<details><summary><svg class="ikon" aria-hidden="true"><use href="#i-buku"/></svg>Sumber rujukan (' + rinci.length + ')</summary><ul class="daftar-sumber">' +
+      rinci.map((s) => {
+        const hlm = s.halaman ? ', hlm. ' + escapeHtml(String(s.halaman)) : '';
+        const judul = escapeHtml(s.judul || s.berkas || '');
+        const isi = amanTautan(s.tautan)
+          ? '<a href="' + escapeHtml(s.tautan) + '" target="_blank" rel="noopener noreferrer" title="Buka dokumen sumber di tab baru">' + judul + hlm + ' ↗</a>'
+          : judul + hlm;
+        return '<li><span class="rujuk">' + Number(s.nomor) + '</span><span>' + isi + '</span></li>';
+      }).join('') + '</ul></details>';
+  } else if (sumber.length) {
+    // Jawaban lama di riwayat perangkat (sebelum ada tautan): tampilkan nama berkas saja
     html += '<details><summary><svg class="ikon" aria-hidden="true"><use href="#i-buku"/></svg>Sumber rujukan (' + sumber.length + ')</summary><ul class="daftar-sumber">' +
       sumber.map((s) => '<li>' + escapeHtml(s).replace(/^\[(\d+)\]\s*(.*)$/, '<span class="rujuk">$1</span><span>$2</span>') + '</li>').join('') + '</ul></details>';
   }
@@ -247,7 +262,7 @@ async function kirim(teks) {
       pc.riwayat.push({ question: teks, answer: d.answer || '' });
       pc.riwayat = pc.riwayat.slice(-MAKS_RIWAYAT);
       pesanBaru = { jenis: 'sistem', tanya: teks, data: {
-        answer: d.answer || '', mode: d.mode, sources: d.sources || [], standalone_question: d.standalone_question || '',
+        answer: d.answer || '', mode: d.mode, sources: d.sources || [], sources_detail: d.sources_detail || [], standalone_question: d.standalone_question || '',
         timing: d.timing || {}, suggestions: d.suggestions || [] } };
     }
   } catch (err) {

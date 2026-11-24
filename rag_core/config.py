@@ -69,7 +69,21 @@ PAHAMI_PERTANYAAN = os.environ.get("PAHAMI_PERTANYAAN", "1").strip() != "0"
 # Temperature jawaban di aplikasi web. 0 = paling konsisten: pertanyaan yang
 # maknanya sama (kueri bakunya sama) mendapat jawaban yang sama atau hampir sama.
 LLM_TEMPERATURE_PERCAKAPAN = float(os.environ.get("LLM_TEMPERATURE_PERCAKAPAN", "0"))
+# Seed tetap untuk LLM di aplikasi web (penyedia yang mendukung, misalnya Groq,
+# berusaha memberi hasil yang sama untuk masukan yang sama). Kosongkan untuk mematikan.
+_SEED = os.environ.get("LLM_SEED", "42").strip()
+LLM_SEED = int(_SEED) if _SEED else None
+# Lama jawaban untuk kueri baku disimpan di memori server (detik). 0 = mati.
+CACHE_JAWABAN_DETIK = int(os.environ.get("CACHE_JAWABAN_DETIK", "21600"))
 # TAMPILKAN_SARAN=1: tampilkan saran pertanyaan lanjutan berbasis templat di
 # bawah jawaban. Bawaannya 0 agar pengguna tidak diarahkan ke pertanyaan templat.
 TAMPILKAN_SARAN = os.environ.get("TAMPILKAN_SARAN", "0").strip() == "1"
+# Alamat dasar salinan PDF sumber rujukan, agar sumber di bawah jawaban bisa
+# diklik dan langsung membuka halaman yang dikutip. Bawaannya CDN jsDelivr untuk
+# folder data_source/ di repositori GitHub penelitian (publik). Kosongkan untuk
+# mematikan tautan ini; tautan resmi di rag_core/data/tautan_sumber.csv tetap dipakai.
+SUMBER_BASE_URL = os.environ.get(
+    "SUMBER_BASE_URL",
+    "https://cdn.jsdelivr.net/gh/haritsdwi6077-ui/skripsi_chatbot@main/data_source",
+)
 
