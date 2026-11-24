@@ -900,6 +900,46 @@ def sumber_dikutip_rinci(answer: str, contexts: list[dict]) -> list[dict]:
             for i in sorted(nomor) if 1 <= i <= len(contexts)]
 
 
+POLA_KURUNG = re.compile(r"\[(\d+(?:\s*,\s*\d+)*)\]")
+
+
+def nomori_ulang_sitasi(answer: str, contexts: list[dict]) -> tuple[str, list[dict]]:
+    """Untuk tampilan web: nomor rujukan diurutkan ulang menjadi 1, 2, 3, ...
+
+    Tanpa ini, jawaban yang hanya mengutip potongan ke-1, 3, 5, 6, 7, dan 8
+    menampilkan "Sumber rujukan (6)" tetapi nomornya sampai 8, sehingga
+    membingungkan. Nomor diberikan menurut urutan pertama kali muncul di
+    jawaban, dan potongan dari dokumen serta halaman yang sama digabung menjadi
+    satu nomor. Mengembalikan (jawaban baru, konteks yang dikutip saja, sesuai
+    nomor barunya). hasil["contexts"] untuk evaluasi tidak diubah.
+    """
+    answer = rapikan_sitasi(answer)
+    peta: dict[int, int] = {}
+    dipakai: list[dict] = []
+    per_label: dict[str, int] = {}
+    for m in POLA_KURUNG.finditer(answer):
+        for n in m.group(1).split(","):
+            i = int(n)
+            if i in peta or not 1 <= i <= len(contexts):
+                continue
+            label = _label_sumber(contexts[i - 1])
+            if label not in per_label:
+                dipakai.append(contexts[i - 1])
+                per_label[label] = len(dipakai)
+            peta[i] = per_label[label]
+
+    def ganti(m: re.Match) -> str:
+        lama = [int(n) for n in m.group(1).split(",")]
+        if not all(i in peta for i in lama):
+            return m.group(0)
+        baru = sorted({peta[i] for i in lama})
+        return "".join(f"[{i}]" for i in baru)
+
+    answer = POLA_KURUNG.sub(ganti, answer)
+    answer = re.sub(r"(\[\d+\])(?:\s*\1)+", r"\1", answer)  # [2][2] -> [2]
+    return answer, dipakai
+
+
 def format_sources(contexts: list[dict]) -> list[str]:
     """Daftar sumber unik untuk ditampilkan di bawah jawaban."""
     hasil, sudah = [], set()

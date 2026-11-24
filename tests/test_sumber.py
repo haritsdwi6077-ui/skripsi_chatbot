@@ -43,3 +43,16 @@ def test_hanya_sumber_yang_dikutip():
     ctx = [{"source": "A/1_a.pdf", "page": 1}, {"source": "B/2_b.pdf", "page": 9}]
     hasil = engine.sumber_dikutip_rinci("Isi [2].", ctx)
     assert [r["nomor"] for r in hasil] == [2] and hasil[0]["halaman"] == 9
+
+
+def test_nomor_rujukan_diurutkan_ulang_agar_jumlah_dan_nomor_cocok():
+    """Masalah setelah revisi 3: "Sumber rujukan (6)" tetapi nomornya sampai 8."""
+    from rag_core import engine
+    ctx = [{"source": f"D{i}.pdf", "page": 1, "text": ""} for i in range(1, 9)]
+    ctx[6] = dict(ctx[2])   # potongan 7 berasal dari dokumen & halaman yang sama dengan 3
+    jawaban, dikutip = engine.nomori_ulang_sitasi(
+        "Blas [1][3][8]. Bercak [5, 6]. Hawar [7]. Tahun [2023].", ctx)
+    assert jawaban == "Blas [1][2][3]. Bercak [4][5]. Hawar [2]. Tahun [2023]."
+    assert [c["source"] for c in dikutip] == ["D1.pdf", "D3.pdf", "D8.pdf", "D5.pdf", "D6.pdf"]
+    rinci = engine.sumber_dikutip_rinci(jawaban, dikutip)
+    assert [r["nomor"] for r in rinci] == [1, 2, 3, 4, 5]

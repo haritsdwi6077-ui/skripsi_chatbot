@@ -86,6 +86,10 @@ def chat():
     if config.TAMPILKAN_SARAN and hasil.get("jenis") != "sapaan":
         # Saran pertanyaan lanjutan (aturan, tanpa LLM); lihat rag_core/saran.py
         usulan = saran.saran_lanjutan(pertanyaan_mandiri, hasil["answer"])
+    # Nomor rujukan diurutkan ulang 1, 2, 3, ... agar jumlah dan nomor sumber
+    # yang tampil cocok (hanya untuk tampilan; hasil evaluasi tidak berubah)
+    jawaban, dikutip = engine.nomori_ulang_sitasi(hasil["answer"], hasil["contexts"])
+    hasil = {**hasil, "answer": jawaban, "contexts": dikutip}
     return jsonify(
         {
             "answer": hasil["answer"],
