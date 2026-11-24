@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 
 TAMPILKAN_MODE = os.environ.get("TAMPILKAN_MODE", "1").strip() != "0"
-ASET_VERSI = "2026-11-05c"   # ubah bila CSS/JS di static/ diganti, agar browser memuat versi baru
+ASET_VERSI = "2026-11-24a"   # ubah bila CSS/JS di static/ diganti, agar browser memuat versi baru
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 60 * 60 * 24 * 7
 
 
@@ -72,21 +72,28 @@ def chat():
         if mode == "llm":
             hasil = engine.answer_tanpa_rag(question, riwayat=riwayat)
         else:
-            hasil = engine.answer(question, riwayat=riwayat)
+            hasil = engine.answer(question, riwayat=riwayat,
+                                  percakapan=config.PAHAMI_PERTANYAAN)
     except Exception as exc:  # noqa: BLE001
         app.logger.exception("Gagal memproses pertanyaan")
         return jsonify({"error": f"Sistem gagal memproses pertanyaan: {exc}"}), 500
 
     pertanyaan_mandiri = hasil.get("pertanyaan_mandiri", question)
+    # Tafsiran hanya ditampilkan untuk pertanyaan lanjutan (ada riwayat), agar
+    # pertanyaan pertama terasa seperti mengobrol biasa tanpa catatan tambahan.
+    tafsiran = pertanyaan_mandiri if (riwayat and hasil.get("jenis") != "sapaan") else question
+    usulan = []
+    if config.TAMPILKAN_SARAN and hasil.get("jenis") != "sapaan":
+        # Saran pertanyaan lanjutan (aturan, tanpa LLM); lihat rag_core/saran.py
+        usulan = saran.saran_lanjutan(pertanyaan_mandiri, hasil["answer"])
     return jsonify(
         {
             "answer": hasil["answer"],
             "mode": mode,
             "sources": engine.sumber_dikutip(hasil["answer"], hasil["contexts"]),
-            "standalone_question": pertanyaan_mandiri,
+            "standalone_question": tafsiran,
             "timing": hasil.get("timing", {}),
-            # Saran pertanyaan lanjutan (aturan, tanpa LLM); lihat rag_core/saran.py
-            "suggestions": saran.saran_lanjutan(pertanyaan_mandiri, hasil["answer"]),
+            "suggestions": usulan,
         }
     )
 

@@ -1,22 +1,6 @@
 // Halaman tanya jawab Tanya Padi. Riwayat percakapan disimpan di localStorage
 // browser; server tetap stateless. Komponen laci, dialog, dan tombol memakai Bootstrap 5.3.
 const TAMPILKAN_MODE = document.body.dataset.tampilkanMode === '1';
-const CONTOH = [
-  { judul: 'Penyakit karena jamur', tanya: [
-    'Apa gejala penyakit blas pada daun padi?',
-    'Seperti apa gejala bercak cokelat pada padi?',
-    'Bagaimana cara mencegah blas leher malai?' ] },
-  { judul: 'Penyakit karena bakteri dan virus', tanya: [
-    'Daun padi mengering dari ujung dan pinggirnya, apakah itu kresek?',
-    'Daun padi menguning oranye dan tanaman kerdil, apakah itu tungro?' ] },
-  { judul: 'Hama', tanya: [
-    'Apa tanda serangan wereng batang cokelat?',
-    'Apa itu sundep dan beluk?',
-    'Bagaimana cara mengendalikan keong mas di sawah?' ] },
-  { judul: 'Gambaran umum', tanya: [
-    'Penyakit padi apa saja yang disebabkan jamur?',
-    'Sebutkan hama utama tanaman padi' ] },
-];
 const MAKS_RIWAYAT = 3;          // giliran terakhir yang dikirim ke server untuk pertanyaan lanjutan
 const MAKS_PERCAKAPAN = 40;      // percakapan lama yang disimpan di perangkat
 const KUNCI = 'tanyaPadi.percakapan.v1';
@@ -114,15 +98,7 @@ function rapikan(teks) {
   return html || '<p></p>';
 }
 
-// ---------- Contoh pertanyaan ----------
-const wadahContoh = $('contoh');
-CONTOH.forEach((k) => {
-  const g = document.createElement('div');
-  const h = document.createElement('h3'); h.textContent = k.judul; g.appendChild(h);
-  const chips = document.createElement('div'); chips.className = 'chips';
-  k.tanya.forEach((t) => chips.appendChild(buatChip(t)));
-  g.appendChild(chips); wadahContoh.appendChild(g);
-});
+// ---------- Chip (dipakai saran lanjutan bila TAMPILKAN_SARAN=1) ----------
 function buatChip(teks) {
   const b = document.createElement('button');
   b.type = 'button'; b.className = 'chip'; b.textContent = teks;

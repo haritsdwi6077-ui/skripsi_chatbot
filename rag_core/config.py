@@ -60,3 +60,13 @@ REQUEST_TIMEOUT = int(os.environ.get("REQUEST_TIMEOUT", "60"))
 
 GAYA_JAWABAN = os.environ.get("GAYA_JAWABAN", "standar").strip().lower()
 
+# --- Aplikasi web (revisi seminar hasil) ---
+# PAHAMI_PERTANYAAN=1: setiap pesan di aplikasi web lebih dulu dipahami oleh LLM
+# (singkatan, salah ketik, bahasa sehari-hari, cerita gejala, salam), lihat
+# engine.answer_percakapan(). 0 = kembali ke alur lama. Tidak memengaruhi
+# scripts/evaluate.py.
+PAHAMI_PERTANYAAN = os.environ.get("PAHAMI_PERTANYAAN", "1").strip() != "0"
+# TAMPILKAN_SARAN=1: tampilkan saran pertanyaan lanjutan berbasis templat di
+# bawah jawaban. Bawaannya 0 agar pengguna tidak diarahkan ke pertanyaan templat.
+TAMPILKAN_SARAN = os.environ.get("TAMPILKAN_SARAN", "0").strip() == "1"
+

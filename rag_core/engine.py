@@ -5,6 +5,7 @@ API secara langsung agar dependensinya ringan (penting untuk deploy di Vercel)
 dan agar model LLM mudah diganti untuk kebutuhan perbandingan antar-LLM.
 """
 
+import json
 import re
 import time
 
@@ -328,7 +329,7 @@ def build_prompt(question: str, contexts: list[dict]) -> str:
 
 
 def answer(question: str, top_k: int | None = None, model: str | None = None,
-           riwayat: list[dict] | None = None) -> dict:
+           riwayat: list[dict] | None = None, percakapan: bool = False) -> dict:
     """Satu siklus penuh RAG: jawaban, konteks sumber, serta waktu tiap tahap.
 
     riwayat (opsional): giliran tanya-jawab sebelumnya. Bila ada, pertanyaan
@@ -336,10 +337,16 @@ def answer(question: str, top_k: int | None = None, model: str | None = None,
     Evaluasi memanggil fungsi ini tanpa riwayat, jadi hasil evaluasi tidak
     terpengaruh fitur percakapan.
 
+    percakapan=True dipakai aplikasi web: setiap pesan lebih dulu dipahami oleh
+    LLM (lihat answer_percakapan). Bawaannya False, sehingga jalur yang dipakai
+    scripts/evaluate.py tetap sama dengan jalur yang dievaluasi di skripsi.
+
     "timing" (detik): rewrite_s = penulisan ulang pertanyaan (0 tanpa riwayat),
     retrieval_s = embedding kueri + pencarian Qdrant, generation_s = panggilan
     LLM, total_s = seluruh proses.
     """
+    if percakapan:
+        return answer_percakapan(question, top_k=top_k, model=model, riwayat=riwayat)
     t0 = time.perf_counter()
     riwayat = rapikan_riwayat(riwayat)
     pertanyaan, rewrite_s = tulis_ulang_pertanyaan(question, riwayat, model=model)
@@ -410,6 +417,221 @@ def answer_tanpa_rag(question: str, model: str | None = None,
         },
         "usage": {k: hasil[k] for k in ("model", "prompt_tokens", "completion_tokens",
                                         "reasoning_tokens", "total_tokens")},
+    }
+
+
+# --- Mode percakapan (aplikasi web) ------------------------------------------
+# Revisi seminar hasil: pengguna tidak boleh diarahkan ke pertanyaan template.
+# Petani bisa menulis singkat, memakai bahasa sehari-hari, singkatan ("gmn",
+# "knp"), salah ketik, atau hanya menceritakan gejala. Karena itu SETIAP pesan,
+# bukan hanya pertanyaan lanjutan, lebih dulu dipahami oleh LLM dan diubah
+# menjadi kueri pencarian yang jelas. Salam dan basa-basi dijawab wajar tanpa
+# mencari dokumen. Jalur ini hanya dipakai aplikasi web (answer(...,
+# percakapan=True)); evaluasi RAGAS tetap memakai jalur answer() bawaan.
+
+SYSTEM_PROMPT_PAHAMI = (
+    "Anda membantu aplikasi tanya jawab hama dan penyakit padi memahami pesan "
+    "pengguna. Pengguna sering menulis singkat, memakai bahasa sehari-hari atau "
+    "bahasa daerah, singkatan seperti gmn, knp, yg, atau sdh, salah ketik, dan "
+    "kadang hanya menceritakan gejala tanpa menyebut nama hama atau penyakit.\n\n"
+    "Tugas Anda:\n"
+    "1. Tentukan jenis pesan. Pilih \"sapaan\" bila pesan hanya berisi salam, "
+    "ucapan terima kasih, basa-basi, atau pertanyaan tentang aplikasi ini, "
+    "misalnya \"halo\", \"makasih\", atau \"kamu bisa bantu apa\". Selain itu "
+    "pilih \"pertanyaan\".\n"
+    "2. Untuk jenis \"pertanyaan\", tulis ulang pesan menjadi satu kalimat tanya "
+    "bahasa Indonesia baku yang lengkap dan bisa dipahami tanpa membaca "
+    "percakapan sebelumnya. Perbaiki salah ketik dan singkatan. Ganti kata "
+    "rujukan seperti \"itu\", \"tersebut\", atau akhiran \"-nya\" dengan hal "
+    "yang dimaksud dari percakapan sebelumnya. Bila pengguna menceritakan "
+    "gejala, tulis sebagai pertanyaan tentang kemungkinan penyebab gejala itu "
+    "pada tanaman padi. Pertahankan maksud asli pengguna, jangan menambahkan "
+    "nama hama atau penyakit yang tidak disebut atau tidak jelas tersirat, dan "
+    "jangan menjawab pertanyaannya.\n\n"
+    "Balas hanya dengan JSON satu baris, tanpa teks lain: "
+    "{\"jenis\": \"pertanyaan\", \"kueri\": \"...\"} atau "
+    "{\"jenis\": \"sapaan\", \"kueri\": \"\"}"
+)
+
+SYSTEM_PROMPT_SAPAAN = (
+    "Anda adalah Tanya Padi, asisten yang membantu petani memahami hama dan "
+    "penyakit tanaman padi. Balas pesan pengguna dengan ramah dan singkat (1-2 "
+    "kalimat) dalam bahasa Indonesia sehari-hari. Bila sesuai, sampaikan bahwa "
+    "pengguna boleh langsung bertanya atau menceritakan apa yang terlihat di "
+    "sawah dengan bahasanya sendiri. Jangan memberi informasi teknis tentang "
+    "hama atau penyakit, dan jangan memberi daftar contoh pertanyaan."
+)
+
+SYSTEM_PROMPT_PERCAKAPAN = (
+    "Anda adalah Tanya Padi, asisten penyuluh pertanian yang membantu petani "
+    "memahami hama dan penyakit tanaman padi. Pengguna bisa bertanya singkat, "
+    "memakai bahasa sehari-hari, singkatan, atau salah ketik. Pahami maksudnya "
+    "dan jawab langsung seperti sedang berbicara dengan petani, tanpa meminta "
+    "pengguna mengubah cara bertanya. Isi jawaban HANYA boleh diambil dari "
+    "konteks yang diberikan. Dokumen konteks dapat berbahasa Indonesia maupun "
+    "Inggris, tetapi jawaban selalu ditulis dalam bahasa Indonesia yang "
+    "sederhana. Sesuaikan panjang jawaban dengan pertanyaan: pertanyaan singkat "
+    "dijawab singkat dan langsung ke inti, lalu rincian seperlunya. Jika "
+    "pengguna menceritakan gejala tanpa menyebut nama hama atau penyakit, "
+    "sebutkan kemungkinan penyebab yang sesuai dengan konteks beserta ciri "
+    "pembedanya, lalu boleh tanyakan satu hal singkat untuk memastikan, "
+    "misalnya bagian tanaman yang terserang. Jika konteks tidak memuat "
+    "informasi yang ditanyakan, katakan terus terang bahwa informasinya belum "
+    "ada di dokumen rujukan, dan jangan mengarang jawaban. Jika pertanyaan "
+    "meminta daftar atau gambaran umum, sebutkan hama atau penyakit yang ada di "
+    "konteks. Cantumkan nomor sumber, misalnya [1], pada bagian jawaban yang "
+    "mengambil informasi dari konteks tersebut. Jangan menambahkan hama, "
+    "penyakit, atau keterangan yang tidak ada di konteks. Jangan menebak "
+    "kepanjangan singkatan yang tidak dijelaskan di konteks. Bila sebagian "
+    "konteks membahas tanaman lain seperti jagung atau kedelai, abaikan bagian "
+    "itu dan jawab hanya untuk tanaman padi."
+    + RANAH
+    + FORMAT_JAWABAN
+)
+
+PROMPT_TEMPLATE_PERCAKAPAN = """Konteks:
+{context}
+
+Pesan pengguna:
+{asli}
+
+Maksud pesan menurut sistem:
+{kueri}
+
+Jawaban:"""
+
+JENIS_PESAN = ("pertanyaan", "sapaan")
+
+
+def _baca_json(teks: str) -> dict | None:
+    """Ambil objek JSON pertama dari jawaban LLM (kadang dibungkus ```json)."""
+    m = re.search(r"\{.*?\}", teks or "", re.DOTALL)
+    if not m:
+        return None
+    try:
+        data = json.loads(m.group(0))
+    except ValueError:
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def pahami_pertanyaan(question: str, riwayat: list[dict],
+                      model: str | None = None) -> tuple[str, str, float]:
+    """Memahami satu pesan pengguna sebelum retrieval.
+
+    Mengembalikan (jenis, kueri, detik). jenis = "pertanyaan" atau "sapaan".
+    Bila LLM gagal atau hasilnya janggal, dipakai cara lama sebagai cadangan:
+    tulis_ulang_pertanyaan() bila ada riwayat, selain itu lengkapi_pertanyaan().
+    """
+    def cadangan() -> tuple[str, str, float]:
+        if riwayat:
+            kueri, detik = tulis_ulang_pertanyaan(question, riwayat, model=model)
+            return "pertanyaan", kueri, detik
+        return "pertanyaan", lengkapi_pertanyaan(question), 0.0
+
+    percakapan = "\n\n".join(
+        f"Pengguna: {g['question']}\nAsisten: {g['answer']}" for g in riwayat
+    )
+    prompt = (f"Percakapan sebelumnya:\n{percakapan}\n\n" if percakapan else "") + \
+        f"Pesan pengguna: {question}"
+    try:
+        hasil = llm.generate_detail(
+            prompt,
+            system_prompt=SYSTEM_PROMPT_PAHAMI,
+            model=model,
+            temperature=0,
+            reasoning_effort="low" if config.LLM_REASONING_EFFORT else "",
+        )
+    except Exception:  # noqa: BLE001
+        return cadangan()
+    data = _baca_json(hasil["text"])
+    if not data:
+        return cadangan()
+    jenis = str(data.get("jenis") or "").strip().lower()
+    kueri = re.sub(r"\s+", " ", str(data.get("kueri") or "")).strip()
+    if jenis == "sapaan":
+        return "sapaan", "", hasil["latency_s"]
+    if jenis != "pertanyaan" or not kueri or len(kueri) > 400:
+        return cadangan()
+    return "pertanyaan", kueri, hasil["latency_s"]
+
+
+def build_prompt_percakapan(asli: str, kueri: str, contexts: list[dict]) -> str:
+    blocks = []
+    for i, ctx in enumerate(contexts, start=1):
+        page = f", hlm. {ctx['page']}" if ctx.get("page") else ""
+        blocks.append(f"[{i}] (Sumber: {ctx['source']}{page})\n{ctx['text']}")
+    return PROMPT_TEMPLATE_PERCAKAPAN.format(
+        context="\n\n".join(blocks) if blocks else "(tidak ada konteks)",
+        asli=asli,
+        kueri=kueri,
+    )
+
+
+def _usage(hasil: dict) -> dict:
+    return {k: hasil.get(k) for k in ("model", "prompt_tokens", "completion_tokens",
+                                      "reasoning_tokens", "total_tokens")}
+
+
+def answer_percakapan(question: str, top_k: int | None = None, model: str | None = None,
+                      riwayat: list[dict] | None = None) -> dict:
+    """Jalur aplikasi web: pahami pesan, lalu jawab seperti asisten AI pada umumnya.
+
+    Struktur hasil sama dengan answer(), ditambah kunci "jenis"
+    ("pertanyaan" atau "sapaan"). Riwayat percakapan ikut dikirim ke LLM agar
+    jawaban nyambung dengan obrolan sebelumnya.
+    """
+    t0 = time.perf_counter()
+    riwayat = rapikan_riwayat(riwayat)
+    jenis, kueri, rewrite_s = pahami_pertanyaan(question, riwayat, model=model)
+
+    if jenis == "sapaan":
+        hasil = llm.generate_detail(
+            question, system_prompt=SYSTEM_PROMPT_SAPAAN, model=model, riwayat=riwayat,
+        )
+        t1 = time.perf_counter()
+        return {
+            "answer": hasil["text"],
+            "contexts": [],
+            "pertanyaan_mandiri": question,
+            "jenis": "sapaan",
+            "timing": {"rewrite_s": rewrite_s, "retrieval_s": 0.0,
+                       "generation_s": hasil["latency_s"], "total_s": round(t1 - t0, 3)},
+            "usage": _usage(hasil),
+        }
+
+    t_awal = time.perf_counter()
+    contexts = retrieve(kueri, top_k=top_k)
+    t1 = time.perf_counter()
+    if not contexts:
+        return {
+            "answer": "Maaf, informasi tentang hal itu belum ada di dokumen rujukan Tanya Padi.",
+            "contexts": [],
+            "pertanyaan_mandiri": kueri,
+            "jenis": "pertanyaan",
+            "timing": {"rewrite_s": rewrite_s, "retrieval_s": round(t1 - t_awal, 3),
+                       "generation_s": 0.0, "total_s": round(t1 - t0, 3)},
+            "usage": {},
+        }
+    hasil = llm.generate_detail(
+        build_prompt_percakapan(question, kueri, contexts),
+        system_prompt=SYSTEM_PROMPT_PERCAKAPAN,
+        model=model,
+        riwayat=riwayat,
+    )
+    t2 = time.perf_counter()
+    return {
+        "answer": rapikan_sitasi(hasil["text"]),
+        "contexts": contexts,
+        "pertanyaan_mandiri": kueri,
+        "jenis": "pertanyaan",
+        "timing": {
+            "rewrite_s": rewrite_s,
+            "retrieval_s": round(t1 - t_awal, 3),
+            "generation_s": hasil["latency_s"],
+            "total_s": round(t2 - t0, 3),
+        },
+        "usage": _usage(hasil),
     }
 
 
