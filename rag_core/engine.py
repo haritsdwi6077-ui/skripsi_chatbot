@@ -9,7 +9,7 @@ import json
 import re
 import time
 
-from rag_core import config, embeddings, llm
+from rag_core import config, embeddings, llm, saran
 from rag_core.pertanyaan import lengkapi_pertanyaan
 from database import vector_db
 
@@ -447,11 +447,60 @@ SYSTEM_PROMPT_PAHAMI = (
     "gejala, tulis sebagai pertanyaan tentang kemungkinan penyebab gejala itu "
     "pada tanaman padi. Pertahankan maksud asli pengguna, jangan menambahkan "
     "nama hama atau penyakit yang tidak disebut atau tidak jelas tersirat, dan "
-    "jangan menjawab pertanyaannya.\n\n"
+    "jangan menjawab pertanyaannya.\n"
+    "3. Untuk jenis \"pertanyaan\", tentukan juga aspek yang ditanyakan, pilih "
+    "SATU: pengertian, gejala, penyebab, pengendalian, pencegahan, musuh_alami, "
+    "atau lainnya. Obat, cara membasmi, atau cara mengatasi termasuk "
+    "pengendalian. Ciri atau tanda serangan termasuk gejala. Pertanyaan yang "
+    "meminta daftar, membandingkan, atau menceritakan gejala tanpa nama hama "
+    "atau penyakit termasuk lainnya.\n"
+    "4. Isi \"topik\" dengan nama hama atau penyakit padi yang dimaksud, persis "
+    "seperti yang disebut atau dirujuk pengguna. Kosongkan bila tidak ada.\n\n"
     "Balas hanya dengan JSON satu baris, tanpa teks lain: "
-    "{\"jenis\": \"pertanyaan\", \"kueri\": \"...\"} atau "
-    "{\"jenis\": \"sapaan\", \"kueri\": \"\"}"
+    "{\"jenis\": \"pertanyaan\", \"aspek\": \"...\", \"topik\": \"...\", \"kueri\": \"...\"} atau "
+    "{\"jenis\": \"sapaan\", \"aspek\": \"\", \"topik\": \"\", \"kueri\": \"\"}"
 )
+
+# Kueri baku untuk pencarian dokumen. Pertanyaan yang artinya sama, misalnya
+# "wereng coklat gmn ngatasinya" dan "cara basmi WBC", disusun menjadi kalimat
+# pencarian yang PERSIS sama, sehingga potongan dokumen yang diambil juga sama.
+# Pola ini hanya dipakai di dalam sistem dan tidak ditampilkan ke pengguna.
+KUERI_BAKU = {
+    "pengertian": {"penyakit": "Apa itu {nama} pada tanaman padi?",
+                   "hama": "Apa itu hama {nama} pada tanaman padi?"},
+    "gejala": {"penyakit": "Apa gejala {nama} pada tanaman padi?",
+               "hama": "Apa gejala serangan {nama} pada tanaman padi?"},
+    "penyebab": {"penyakit": "Apa penyebab {nama} pada tanaman padi?",
+                 "hama": "Apa penyebab serangan {nama} pada tanaman padi?"},
+    "pengendalian": {"penyakit": "Bagaimana cara mengendalikan {nama} pada tanaman padi?",
+                     "hama": "Bagaimana cara mengendalikan {nama} pada tanaman padi?"},
+    "pencegahan": {"penyakit": "Bagaimana cara mencegah {nama} pada tanaman padi?",
+                   "hama": "Bagaimana cara mencegah serangan {nama} pada tanaman padi?"},
+    "musuh_alami": {"penyakit": None,
+                    "hama": "Apa saja musuh alami {nama} pada tanaman padi?"},
+}
+
+
+def kueri_baku(aspek: str, topik: str, kueri: str) -> str:
+    """Kalimat pencarian baku bila aspek dan tepat satu hama/penyakit dikenali.
+
+    Nama hama/penyakit diseragamkan lewat saran.cari_topik(), misalnya
+    "wereng coklat", "WBC", dan "brown planthopper" menjadi
+    "wereng batang cokelat". Bila tidak bisa dibakukan (aspek lainnya, nama
+    tidak dikenali, atau lebih dari satu nama), kueri dari LLM dipakai apa adanya.
+    """
+    pola = KUERI_BAKU.get((aspek or "").strip().lower())
+    if not pola:
+        return kueri
+    dikenali = saran.cari_topik(topik) or saran.cari_topik(kueri)
+    nama_unik = {nama for nama, _ in dikenali}
+    if len(nama_unik) != 1:
+        return kueri
+    nama, jenis = dikenali[0]
+    templat = pola.get(jenis)
+    if not templat:
+        return kueri
+    return templat.format(nama=nama)
 
 SYSTEM_PROMPT_SAPAAN = (
     "Anda adalah Tanya Padi, asisten yang membantu petani memahami hama dan "
@@ -553,6 +602,7 @@ def pahami_pertanyaan(question: str, riwayat: list[dict],
         return "sapaan", "", hasil["latency_s"]
     if jenis != "pertanyaan" or not kueri or len(kueri) > 400:
         return cadangan()
+    kueri = kueri_baku(str(data.get("aspek") or ""), str(data.get("topik") or ""), kueri)
     return "pertanyaan", kueri, hasil["latency_s"]
 
 
@@ -618,6 +668,8 @@ def answer_percakapan(question: str, top_k: int | None = None, model: str | None
         system_prompt=SYSTEM_PROMPT_PERCAKAPAN,
         model=model,
         riwayat=riwayat,
+        # Temperature rendah agar pertanyaan yang sama maknanya dijawab konsisten
+        temperature=config.LLM_TEMPERATURE_PERCAKAPAN,
     )
     t2 = time.perf_counter()
     return {

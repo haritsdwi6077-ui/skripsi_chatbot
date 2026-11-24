@@ -85,6 +85,44 @@ def test_riwayat_ikut_dikirim_ke_llm(monkeypatch):
     assert panggilan[-1]["riwayat"] == riwayat
 
 
+def test_kalimat_berbeda_arti_sama_dicari_dengan_kueri_yang_sama(monkeypatch):
+    """Masalah setelah seminar: susunan kata berbeda menghasilkan jawaban berbeda."""
+    tafsiran_llm = {
+        # Tafsiran LLM sengaja dibuat berbeda-beda susunan katanya
+        "wereng coklat gmn ngatasinya": '{"jenis":"pertanyaan","aspek":"pengendalian","topik":"wereng coklat","kueri":"Bagaimana mengatasi wereng coklat?"}',
+        "cara basmi WBC": '{"jenis":"pertanyaan","aspek":"pengendalian","topik":"WBC","kueri":"Apa cara membasmi WBC di sawah?"}',
+        "obat buat wereng batang cokelat apa ya": '{"jenis":"pertanyaan","aspek":"pengendalian","topik":"wereng batang cokelat","kueri":"Obat apa untuk wereng batang cokelat?"}',
+    }
+    dicari = []
+
+    def generate_detail(prompt, system_prompt="", **kw):
+        if system_prompt == engine.SYSTEM_PROMPT_PAHAMI:
+            pesan = prompt.rsplit("Pesan pengguna: ", 1)[1]
+            return _hasil(tafsiran_llm[pesan])
+        return _hasil("Jawaban [1].")
+
+    monkeypatch.setattr(engine.llm, "generate_detail", generate_detail)
+    monkeypatch.setattr(engine, "retrieve", lambda q, top_k=None: dicari.append(q) or
+                        [{"source": "WBC/a.pdf", "page": 1, "text": "..."}])
+    for pesan in tafsiran_llm:
+        engine.answer(pesan, percakapan=True)
+    assert set(dicari) == {"Bagaimana cara mengendalikan wereng batang cokelat pada tanaman padi?"}
+
+
+def test_kueri_baku():
+    assert engine.kueri_baku("gejala", "blast", "x") == "Apa gejala penyakit blas pada tanaman padi?"
+    assert engine.kueri_baku("gejala", "", "ciri kena blas apa") == "Apa gejala penyakit blas pada tanaman padi?"
+    assert engine.kueri_baku("pencegahan", "keong mas", "x") == \
+        "Bagaimana cara mencegah serangan keong mas pada tanaman padi?"
+    # Tidak bisa dibakukan: kueri LLM dipakai apa adanya
+    assert engine.kueri_baku("lainnya", "", "Apa penyebab daun padi menguning?") == \
+        "Apa penyebab daun padi menguning?"
+    assert engine.kueri_baku("gejala", "blas dan tungro", "Apa beda gejala blas dan tungro?") == \
+        "Apa beda gejala blas dan tungro?"
+    assert engine.kueri_baku("pengendalian", "ulat grayak", "Cara mengendalikan ulat grayak?") == \
+        "Cara mengendalikan ulat grayak?"
+
+
 def test_jalur_evaluasi_tidak_berubah(monkeypatch):
     """Tanpa percakapan=True, answer() memakai prompt lama yang dievaluasi di skripsi."""
     panggilan, dicari = _pasang(monkeypatch, {

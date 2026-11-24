@@ -66,6 +66,9 @@ GAYA_JAWABAN = os.environ.get("GAYA_JAWABAN", "standar").strip().lower()
 # engine.answer_percakapan(). 0 = kembali ke alur lama. Tidak memengaruhi
 # scripts/evaluate.py.
 PAHAMI_PERTANYAAN = os.environ.get("PAHAMI_PERTANYAAN", "1").strip() != "0"
+# Temperature jawaban di aplikasi web. 0 = paling konsisten: pertanyaan yang
+# maknanya sama (kueri bakunya sama) mendapat jawaban yang sama atau hampir sama.
+LLM_TEMPERATURE_PERCAKAPAN = float(os.environ.get("LLM_TEMPERATURE_PERCAKAPAN", "0"))
 # TAMPILKAN_SARAN=1: tampilkan saran pertanyaan lanjutan berbasis templat di
 # bawah jawaban. Bawaannya 0 agar pengguna tidak diarahkan ke pertanyaan templat.
 TAMPILKAN_SARAN = os.environ.get("TAMPILKAN_SARAN", "0").strip() == "1"
