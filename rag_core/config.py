@@ -73,8 +73,18 @@ LLM_TEMPERATURE_PERCAKAPAN = float(os.environ.get("LLM_TEMPERATURE_PERCAKAPAN", 
 # berusaha memberi hasil yang sama untuk masukan yang sama). Kosongkan untuk mematikan.
 _SEED = os.environ.get("LLM_SEED", "42").strip()
 LLM_SEED = int(_SEED) if _SEED else None
-# Lama jawaban untuk kueri baku disimpan di memori server (detik). 0 = mati.
-CACHE_JAWABAN_DETIK = int(os.environ.get("CACHE_JAWABAN_DETIK", "21600"))
+# Penyimpanan jawaban kueri baku (lihat rag_core/simpanan.py): pertanyaan yang
+# maknanya sama selalu mendapat jawaban dan rujukan yang sama. 0 = mati.
+SIMPAN_JAWABAN = os.environ.get("SIMPAN_JAWABAN", "1").strip() != "0"
+# Ganti nilai ini (misalnya 2) setelah dokumen rujukan diubah, agar jawaban
+# tersimpan yang lama tidak dipakai lagi.
+CACHE_VERSI = os.environ.get("CACHE_VERSI", "1").strip()
+# Redis Upstash opsional, dibagi oleh semua server Vercel. Nama KV_REST_API_*
+# adalah nama yang diisi otomatis oleh integrasi Upstash di Vercel.
+REDIS_URL = (os.environ.get("UPSTASH_REDIS_REST_URL") or os.environ.get("KV_REST_API_URL") or "").strip()
+REDIS_TOKEN = (os.environ.get("UPSTASH_REDIS_REST_TOKEN") or os.environ.get("KV_REST_API_TOKEN") or "").strip()
+# Lama jawaban disimpan di Redis (detik). 0 = selamanya.
+SIMPAN_JAWABAN_DETIK = int(os.environ.get("SIMPAN_JAWABAN_DETIK", "0"))
 # TAMPILKAN_SARAN=1: tampilkan saran pertanyaan lanjutan berbasis templat di
 # bawah jawaban. Bawaannya 0 agar pengguna tidak diarahkan ke pertanyaan templat.
 TAMPILKAN_SARAN = os.environ.get("TAMPILKAN_SARAN", "0").strip() == "1"

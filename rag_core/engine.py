@@ -8,9 +8,8 @@ dan agar model LLM mudah diganti untuk kebutuhan perbandingan antar-LLM.
 import json
 import re
 import time
-from collections import OrderedDict
 
-from rag_core import config, embeddings, llm, saran
+from rag_core import config, embeddings, llm, saran, simpanan
 from rag_core.pertanyaan import lengkapi_pertanyaan
 from database import vector_db
 
@@ -580,46 +579,114 @@ def _baca_json(teks: str) -> dict | None:
     return data if isinstance(data, dict) else None
 
 
-def adalah_kueri_baku(kueri: str) -> bool:
-    """True bila kueri adalah salah satu kalimat pencarian baku (KUERI_BAKU/DAFTAR)."""
-    if kueri in KUERI_DAFTAR.values():
-        return True
+def semua_kueri_baku() -> list[str]:
+    """Semua kalimat pencarian baku: 3 kueri daftar + setiap hama/penyakit x aspek."""
+    hasil = list(KUERI_DAFTAR.values())
     for nama, jenis, _ in saran.TOPIK:
         for pola in KUERI_BAKU.values():
             templat = pola.get(jenis)
-            if templat and templat.format(nama=nama) == kueri:
-                return True
-    return False
+            if templat:
+                hasil.append(templat.format(nama=nama))
+    return hasil
 
 
-# Penyimpanan jawaban untuk kueri baku (di memori server). Pertanyaan yang
-# maknanya sama mendapat jawaban yang PERSIS sama, termasuk nomor rujukannya,
-# selama server masih menyala. Diatur dengan CACHE_JAWABAN_DETIK (0 = mati).
-_CACHE_JAWABAN: "OrderedDict[tuple, tuple[float, dict]]" = OrderedDict()
-MAKS_CACHE_JAWABAN = 256
+def adalah_kueri_baku(kueri: str) -> bool:
+    """True bila kueri adalah salah satu kalimat pencarian baku (KUERI_BAKU/DAFTAR)."""
+    return kueri in semua_kueri_baku()
 
 
-def _ambil_cache(kunci: tuple) -> dict | None:
-    if config.CACHE_JAWABAN_DETIK <= 0:
+# --- Pemahaman berbasis aturan (tanpa LLM) ----------------------------------
+# Pertanyaan yang umum, yaitu pertanyaan daftar ("apa penyakit padi", "hama
+# padi apa aja") dan pertanyaan satu hama/penyakit + satu aspek ("wbc gmn
+# ngatasinya", "gejala blas"), dikenali dengan aturan tetap. Hasilnya selalu
+# sama untuk kalimat yang maknanya sama, tidak bergantung pada tebakan LLM.
+# Aturan hanya dipakai bila SEMUA kata dikenali; selain itu diserahkan ke LLM.
+
+KATA_PENGISI = set("""
+padi tanaman sawah pada di ke yang yg menyerang diserang serang terserang kena
+apa apaan apakah apa2 saja aja sajakah sih ya dong deh kak min bang pak bu nih
+sebutkan sebut jenis jenis2 macam macam2 daftar umum utama ada berapa terdapat
+itu ini dan serta atau bisa biasanya sering tolong mau tanya saya aku sy gw gue
+jelaskan jelasin kasih tau tahu info informasi contoh contohnya biasa banyak
+bagaimana gimana gmn gmna bgmn bagaimanakah cara caranya untuk utk buat agar
+supaya serangan hama penyakit nya kah dengan dgn tentang ttg mengenai the
+""".split())
+
+# Penggalan kata penanda aspek (dicocokkan sebagai bagian kata, sehingga
+# "ngatasinya", "mengendalikan", dan "obatnya" ikut dikenali).
+STEM_ASPEK = (
+    ("musuh_alami", ("musuh", "predator", "parasitoid")),
+    ("pencegahan", ("cegah", "antisipasi", "hindar")),
+    ("pengendalian", ("endali", "atasi", "basmi", "berantas", "obat", "insektisida",
+                      "fungisida", "bakterisida", "pestisida", "semprot", "usir",
+                      "tangan", "solusi", "racun")),
+    ("penyebab", ("sebab", "nyebab", "patogen", "kenapa", "mengapa", "knp")),
+    ("gejala", ("gejala", "tanda", "ciri", "seperti", "kayak", "kaya")),
+    ("pengertian", ("pengertian", "definisi", "maksud", "arti")),
+)
+KATA_TAMBAHAN_ASPEK = {"alami"}  # bagian dari "musuh alami"
+
+
+def _token(teks: str) -> list[str]:
+    teks = (teks or "").lower().replace("coklat", "cokelat")
+    teks = re.sub(r"\b(\w+)-\1\b", r"\1", teks)  # jenis-jenis -> jenis
+    hasil = []
+    for t in re.findall(r"[a-z0-9]+", teks):
+        t = re.sub(r"2$", "", t) if len(t) > 3 else t   # hama2 -> hama
+        if t.endswith("nya") and t[:-3] in KATA_PENGISI:  # penyakitnya -> penyakit
+            t = t[:-3]
+        hasil.append(t)
+    return hasil
+
+
+def _aspek_kata(kata: str) -> str | None:
+    for aspek, stem in STEM_ASPEK:
+        if any(s in kata for s in stem):
+            return aspek
+    return None
+
+
+def pahami_aturan(teks: str) -> str | None:
+    """Kueri baku dari aturan tetap, atau None bila pesan tidak cukup sederhana."""
+    teks = (teks or "").lower().replace("coklat", "cokelat")
+    dikenali = saran.cari_topik(teks)
+    nama_unik = {nama for nama, _ in dikenali}
+
+    if not nama_unik:
+        # Pertanyaan daftar: hanya berisi kata "penyakit" dan/atau "hama" + kata pengisi
+        kata = _token(teks)
+        sisa = [k for k in kata if k not in KATA_PENGISI]
+        if sisa:
+            return None
+        ada_penyakit, ada_hama = "penyakit" in kata, "hama" in kata
+        if ada_penyakit and ada_hama:
+            return KUERI_DAFTAR["daftar_hama_penyakit"]
+        if ada_penyakit:
+            return KUERI_DAFTAR["daftar_penyakit"]
+        if ada_hama:
+            return KUERI_DAFTAR["daftar_hama"]
         return None
-    isi = _CACHE_JAWABAN.get(kunci)
-    if not isi:
-        return None
-    waktu, data = isi
-    if time.time() - waktu > config.CACHE_JAWABAN_DETIK:
-        _CACHE_JAWABAN.pop(kunci, None)
-        return None
-    _CACHE_JAWABAN.move_to_end(kunci)
-    return data
 
-
-def _simpan_cache(kunci: tuple, data: dict) -> None:
-    if config.CACHE_JAWABAN_DETIK <= 0:
-        return
-    _CACHE_JAWABAN[kunci] = (time.time(), data)
-    _CACHE_JAWABAN.move_to_end(kunci)
-    while len(_CACHE_JAWABAN) > MAKS_CACHE_JAWABAN:
-        _CACHE_JAWABAN.popitem(last=False)
+    if len(nama_unik) != 1:
+        return None
+    nama, jenis = dikenali[0]
+    # Buang nama hama/penyakit dari kalimat, lalu periksa sisa katanya
+    for _nama, _jenis, pola in saran._TOPIK:  # noqa: SLF001
+        if _nama == nama:
+            teks = pola.sub(" ", teks)
+    aspek_ditemukan = set()
+    for k in _token(teks):
+        if k in KATA_PENGISI or k in KATA_TAMBAHAN_ASPEK:
+            continue
+        aspek = _aspek_kata(k)
+        if not aspek:
+            return None  # ada kata yang tidak dikenali: serahkan ke LLM
+        aspek_ditemukan.add(aspek)
+    if len(aspek_ditemukan) > 1:
+        return None
+    aspek = aspek_ditemukan.pop() if aspek_ditemukan else "pengertian"
+    templat = KUERI_BAKU.get(aspek, {}).get(jenis)
+    return templat.format(nama=nama) if templat else None
 
 
 def pahami_pertanyaan(question: str, riwayat: list[dict],
@@ -635,6 +702,11 @@ def pahami_pertanyaan(question: str, riwayat: list[dict],
             kueri, detik = tulis_ulang_pertanyaan(question, riwayat, model=model)
             return "pertanyaan", kueri, detik
         return "pertanyaan", lengkapi_pertanyaan(question), 0.0
+
+    # 1. Aturan tetap dulu: hasilnya sama untuk kalimat yang maknanya sama
+    kueri_aturan = pahami_aturan(question)
+    if kueri_aturan:
+        return "pertanyaan", kueri_aturan, 0.0
 
     percakapan = "\n\n".join(
         f"Pengguna: {g['question']}\nAsisten: {g['answer']}" for g in riwayat
@@ -662,6 +734,11 @@ def pahami_pertanyaan(question: str, riwayat: list[dict],
     if jenis != "pertanyaan" or not kueri or len(kueri) > 400:
         return cadangan()
     kueri = kueri_baku(str(data.get("aspek") or ""), str(data.get("topik") or ""), kueri)
+    if not adalah_kueri_baku(kueri):
+        # 2. Jaring pengaman: LLM kadang salah memilih aspek, padahal kalimat
+        # tulis ulangnya sederhana, misalnya "Apa saja penyakit yang menyerang
+        # padi?". Kalimat itu diperiksa lagi dengan aturan tetap.
+        kueri = pahami_aturan(kueri) or kueri
     return "pertanyaan", kueri, hasil["latency_s"]
 
 
@@ -716,13 +793,12 @@ def answer_percakapan(question: str, top_k: int | None = None, model: str | None
         }
 
     baku = adalah_kueri_baku(kueri)
-    kunci = (kueri, model or config.LLM_MODEL, top_k)
     if baku:
-        simpanan = _ambil_cache(kunci)
-        if simpanan:
+        simpanan_ = simpanan.ambil(kueri, model, top_k)
+        if simpanan_:
             return {
-                **simpanan,
-                "contexts": list(simpanan["contexts"]),
+                **simpanan_,
+                "contexts": list(simpanan_["contexts"]),
                 "pertanyaan_mandiri": kueri,
                 "jenis": "pertanyaan",
                 "dari_cache": True,
@@ -761,7 +837,7 @@ def answer_percakapan(question: str, top_k: int | None = None, model: str | None
         "usage": _usage(hasil),
     }
     if baku:
-        _simpan_cache(kunci, jawaban)
+        simpanan.simpan(kueri, jawaban, model, top_k)
     return {
         **jawaban,
         "pertanyaan_mandiri": kueri,
