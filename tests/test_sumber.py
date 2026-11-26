@@ -56,3 +56,14 @@ def test_nomor_rujukan_diurutkan_ulang_agar_jumlah_dan_nomor_cocok():
     assert [c["source"] for c in dikutip] == ["D1.pdf", "D3.pdf", "D8.pdf", "D5.pdf", "D6.pdf"]
     rinci = engine.sumber_dikutip_rinci(jawaban, dikutip)
     assert [r["nomor"] for r in rinci] == [1, 2, 3, 4, 5]
+
+
+def test_tautan_resmi_pdf_dibuka_di_halaman_yang_dikutip(monkeypatch, tmp_path):
+    csv = tmp_path / "tautan.csv"
+    csv.write_text("berkas,judul,tautan\nUmum/a.pdf,A,https://contoh.org/a.pdf\n"
+                   "Umum/b.pdf,B,https://doi.org/10.1/abc\n", encoding="utf-8")
+    monkeypatch.setattr(sumber, "BERKAS_CSV", csv)
+    sumber._daftar.cache_clear()
+    assert sumber.tautan("Umum/a.pdf", 12) == "https://contoh.org/a.pdf#page=12"
+    assert sumber.tautan("Umum/b.pdf", 12) == "https://doi.org/10.1/abc"
+    sumber._daftar.cache_clear()

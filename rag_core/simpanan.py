@@ -48,7 +48,12 @@ def _berkas() -> dict:
         data = json.loads(BERKAS_JAWABAN.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {}
-    return data.get("jawaban", {}) if isinstance(data, dict) else {}
+    if not isinstance(data, dict):
+        return {}
+    # Berkas lama (dibuat sebelum dokumen atau prompt berubah) tidak dipakai
+    if str(data.get("versi", "1")) != config.CACHE_VERSI:
+        return {}
+    return data.get("jawaban", {})
 
 
 def dari_berkas(kueri: str, model: str | None = None, top_k: int | None = None) -> dict | None:

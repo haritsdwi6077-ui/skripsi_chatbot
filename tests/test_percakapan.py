@@ -232,7 +232,7 @@ def test_jawaban_dari_berkas_jawaban_baku_dipakai_lebih_dulu(monkeypatch, tmp_pa
     di server mana pun dan setelah server dinyalakan ulang."""
     import json
     berkas = tmp_path / "jawaban_baku.json"
-    berkas.write_text(json.dumps({"jawaban": {engine.KUERI_DAFTAR["daftar_penyakit"]: {
+    berkas.write_text(json.dumps({"versi": engine.config.CACHE_VERSI, "jawaban": {engine.KUERI_DAFTAR["daftar_penyakit"]: {
         "answer": "Blas [1].", "contexts": [{"source": "Blas/a.pdf", "page": 1, "text": "..."}]}}}))
     monkeypatch.setattr(simpanan, "BERKAS_JAWABAN", berkas)
     simpanan.kosongkan_memori()
@@ -278,3 +278,46 @@ def test_setiap_kueri_baku_dikenali_ulang_oleh_aturan():
     """Dipakai scripts/buat_jawaban_baku.py: kueri baku yang dikirim ulang tetap kueri itu."""
     for kueri in engine.semua_kueri_baku():
         assert engine.pahami_aturan(kueri) == kueri
+
+
+def test_berkas_jawaban_versi_lama_tidak_dipakai(monkeypatch, tmp_path):
+    """Setelah dokumen atau prompt berubah, jawaban lama di berkas diabaikan."""
+    import json
+    berkas = tmp_path / "jawaban_baku.json"
+    berkas.write_text(json.dumps({"versi": "lama", "jawaban": {engine.KUERI_DAFTAR["daftar_penyakit"]: {
+        "answer": "Jawaban lama [1].", "contexts": [{"source": "a.pdf", "page": 1, "text": "..."}]}}}))
+    monkeypatch.setattr(simpanan, "BERKAS_JAWABAN", berkas)
+    simpanan.kosongkan_memori()
+    _pasang(monkeypatch, {engine.SYSTEM_PROMPT_PERCAKAPAN: "Jawaban baru [1]."})
+    assert engine.answer("apa penyakit padi", percakapan=True)["answer"] == "Jawaban baru [1]."
+
+
+@pytest.mark.parametrize("kueri, harapan", [
+    ("Bagaimana cara mengendalikan wereng batang cokelat pada tanaman padi?", True),
+    ("Bagaimana cara mencegah penyakit blas pada tanaman padi?", True),
+    ("Apa gejala penyakit blas pada tanaman padi?", False),
+    ("Apa saja penyakit yang menyerang tanaman padi?", False),
+])
+def test_pertanyaan_pengendalian_dikenali(kueri, harapan):
+    assert engine.tanya_pengendalian(kueri) is harapan
+
+
+def test_jawaban_pengendalian_memakai_panduan_dan_konteks_lebih_banyak(monkeypatch):
+    """Masukan validator Faperta: rekomendasi pengendalian harus jelas dan terstruktur."""
+    diminta = []
+    panggilan, _ = _pasang(monkeypatch, {engine.SYSTEM_PROMPT_PERCAKAPAN: "Tanam serempak [1]."})
+    asli = engine.retrieve
+
+    def retrieve(q, top_k=None):
+        diminta.append(top_k)
+        return asli(q, top_k)
+
+    monkeypatch.setattr(engine, "retrieve", retrieve)
+    engine.answer("wbc gmn ngatasinya", percakapan=True)
+    prompt = panggilan[-1]["prompt"]
+    assert "### Pengendalian kimia" in prompt and "### Kapan perlu dikendalikan" in prompt
+    assert diminta == [engine.config.TOP_K_PENGENDALIAN]
+
+    simpanan.kosongkan_memori()
+    engine.answer("gejala blas", percakapan=True)
+    assert "### Pengendalian kimia" not in panggilan[-1]["prompt"]

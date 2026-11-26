@@ -56,6 +56,9 @@ def tautan(berkas: str, halaman: int | None = None) -> str | None:
         return None
     resmi = _daftar().get(berkas, {}).get("tautan")
     if resmi:
+        # Tautan resmi yang langsung ke berkas PDF tetap dibuka di halaman yang dikutip
+        if halaman and "#" not in resmi and re.search(r"\.pdf$", resmi, flags=re.IGNORECASE):
+            return f"{resmi}#page={halaman}"
         return resmi
     dasar = (config.SUMBER_BASE_URL or "").strip()
     if not dasar:

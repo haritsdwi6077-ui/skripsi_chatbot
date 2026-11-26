@@ -46,6 +46,10 @@ def main() -> None:
     data = {"jawaban": {}}
     if berkas.exists():
         data = json.loads(berkas.read_text(encoding="utf-8"))
+        if str(data.get("versi", "1")) != config.CACHE_VERSI:
+            print(f"Berkas lama versi {data.get('versi', '1')}: semua jawaban dibuat ulang "
+                  f"untuk CACHE_VERSI={config.CACHE_VERSI}")
+            data = {"jawaban": {}}
     jawaban = data.setdefault("jawaban", {})
 
     daftar = list(engine.KUERI_DAFTAR.values()) if args.hanya_daftar else engine.semua_kueri_baku()
@@ -72,7 +76,7 @@ def main() -> None:
             "contexts": hasil["contexts"],
             "usage": hasil.get("usage", {}),
         }
-        data.update({"model": config.LLM_MODEL, "dibuat": datetime.now().isoformat(timespec="seconds")})
+        data.update({"versi": config.CACHE_VERSI, "model": config.LLM_MODEL, "dibuat": datetime.now().isoformat(timespec="seconds")})
         berkas.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
         time.sleep(args.jeda)
 

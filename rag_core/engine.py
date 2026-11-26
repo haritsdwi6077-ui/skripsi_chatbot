@@ -553,6 +553,36 @@ SYSTEM_PROMPT_PERCAKAPAN = (
     + FORMAT_JAWABAN
 )
 
+# Masukan validator dari Fakultas Pertanian: rekomendasi pengendalian perlu
+# lebih jelas dan dapat langsung diterapkan. Panduan ini ditambahkan ke prompt
+# bila pertanyaan menanyakan cara mengendalikan atau mencegah hama/penyakit.
+PANDUAN_PENGENDALIAN = (
+    "Pertanyaan ini meminta rekomendasi pengendalian atau pencegahan. Susun "
+    "jawaban agar jelas dan dapat langsung diterapkan petani, dengan subjudul "
+    "berikut sesuai urutan, HANYA bila informasinya ada di konteks:\n"
+    "### Kapan perlu dikendalikan: hasil pengamatan, ambang ekonomi atau ambang "
+    "kendali, dan fase tanaman yang rawan.\n"
+    "### Cara budi daya dan pencegahan: misalnya varietas tahan, waktu tanam, "
+    "sanitasi, pemupukan berimbang, dan pengairan.\n"
+    "### Pengendalian hayati: musuh alami atau agens hayati.\n"
+    "### Pengendalian kimia: sebagai pilihan terakhir. Sebutkan bahan aktif, "
+    "dosis atau konsentrasi, dan waktu aplikasi persis seperti tertulis di "
+    "konteks.\n"
+    "Lewati subjudul yang informasinya tidak ada di konteks dan jangan mengisinya "
+    "dengan perkiraan. Jangan menyebut merek dagang, bahan aktif, atau dosis yang "
+    "tidak ada di konteks. Setiap butir rekomendasi harus diberi nomor sumbernya. "
+    "Bila menyebut pestisida kimia, akhiri dengan pengingat singkat untuk memakai "
+    "pestisida yang terdaftar di Kementerian Pertanian dan mengikuti petunjuk "
+    "pada label kemasan."
+)
+ASPEK_PENGENDALIAN = ("pengendalian", "pencegahan")
+
+
+def tanya_pengendalian(kueri: str) -> bool:
+    """True bila kalimat pencarian menanyakan cara mengendalikan atau mencegah."""
+    return any(_aspek_kata(k) in ASPEK_PENGENDALIAN for k in _token(kueri))
+
+
 PROMPT_TEMPLATE_PERCAKAPAN = """Konteks:
 {context}
 
@@ -747,11 +777,14 @@ def build_prompt_percakapan(asli: str, kueri: str, contexts: list[dict]) -> str:
     for i, ctx in enumerate(contexts, start=1):
         page = f", hlm. {ctx['page']}" if ctx.get("page") else ""
         blocks.append(f"[{i}] (Sumber: {ctx['source']}{page})\n{ctx['text']}")
-    return PROMPT_TEMPLATE_PERCAKAPAN.format(
+    prompt = PROMPT_TEMPLATE_PERCAKAPAN.format(
         context="\n\n".join(blocks) if blocks else "(tidak ada konteks)",
         asli=asli,
         kueri=kueri,
     )
+    if tanya_pengendalian(kueri):
+        prompt = prompt.replace("\n\nJawaban:", f"\n\nCara menyusun jawaban:\n{PANDUAN_PENGENDALIAN}\n\nJawaban:")
+    return prompt
 
 
 def _usage(hasil: dict) -> dict:
@@ -807,7 +840,10 @@ def answer_percakapan(question: str, top_k: int | None = None, model: str | None
             }
 
     t_awal = time.perf_counter()
-    contexts = retrieve(kueri, top_k=top_k)
+    # Pertanyaan pengendalian mengambil lebih banyak potongan agar cara budi daya,
+    # hayati, dan kimia dari beberapa dokumen dapat tercakup
+    k_ambil = top_k or (config.TOP_K_PENGENDALIAN if tanya_pengendalian(kueri) else None)
+    contexts = retrieve(kueri, top_k=k_ambil)
     t1 = time.perf_counter()
     if not contexts:
         return {

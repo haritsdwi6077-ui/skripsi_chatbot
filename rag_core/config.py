@@ -39,6 +39,9 @@ TOP_K = int(os.environ.get("TOP_K", "6"))
 # Pertanyaan bertipe daftar ("apa saja", "sebutkan", "jenis-jenis") butuh lebih
 # banyak potongan agar beberapa hama/penyakit bisa muncul. 0 = sama dengan TOP_K.
 TOP_K_DAFTAR = int(os.environ.get("TOP_K_DAFTAR", "8"))
+# Aplikasi web: pertanyaan cara mengendalikan/mencegah mengambil lebih banyak
+# potongan agar rekomendasinya lengkap (budi daya, hayati, kimia). 0 = TOP_K.
+TOP_K_PENGENDALIAN = int(os.environ.get("TOP_K_PENGENDALIAN", "8")) or TOP_K
 # Retrieval beragam (MMR): ambil RETRIEVAL_KANDIDAT potongan termirip dari Qdrant,
 # lalu pilih TOP_K yang relevan TETAPI tidak saling mirip, maksimal MAKS_PER_SUMBER
 # potongan dari dokumen yang sama. MMR_LAMBDA: 1 = murni relevansi, 0 = murni keragaman.
@@ -78,7 +81,7 @@ LLM_SEED = int(_SEED) if _SEED else None
 SIMPAN_JAWABAN = os.environ.get("SIMPAN_JAWABAN", "1").strip() != "0"
 # Ganti nilai ini (misalnya 2) setelah dokumen rujukan diubah, agar jawaban
 # tersimpan yang lama tidak dipakai lagi.
-CACHE_VERSI = os.environ.get("CACHE_VERSI", "1").strip()
+CACHE_VERSI = os.environ.get("CACHE_VERSI", "2").strip()
 # Redis Upstash opsional, dibagi oleh semua server Vercel. Nama KV_REST_API_*
 # adalah nama yang diisi otomatis oleh integrasi Upstash di Vercel.
 REDIS_URL = (os.environ.get("UPSTASH_REDIS_REST_URL") or os.environ.get("KV_REST_API_URL") or "").strip()

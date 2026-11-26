@@ -6,3 +6,7 @@ __pycache__/
 .vercel
 hasil_evaluasi*.csv
 .cache/
+
+# Berkas lebih dari 100 MB (batas GitHub). Tetap dibaca ingest di laptop;
+# tautan sumbernya memakai alamat resmi di rag_core/data/tautan_sumber.csv
+data_source/Umum/154_Reissig_dkk_IRRI_Illustrated_guide_to_integrated_pest_management_in_rice_in_tropical_Asia_1986.pdf
